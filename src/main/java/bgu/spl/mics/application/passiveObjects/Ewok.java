@@ -21,9 +21,8 @@ public class Ewok {
      * @POST: available=false
      */
     public void acquire() {
-		if (!available){
+		if (!available)
 		    throw new RuntimeException("Ewok is not available");
-        }
 		available=false;
     }
 

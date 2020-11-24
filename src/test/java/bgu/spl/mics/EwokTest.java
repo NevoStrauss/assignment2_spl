@@ -34,11 +34,11 @@ public class EwokTest {
     @Test
     public void acquireWhenAlreadyAcquiredTest(){
         ewok.acquire();
-        assertThrows(RuntimeException.class, ()->ewok.acquire());
+        assertThrows(RuntimeException.class,()->ewok.acquire());
     }
 
     @Test
-    public void releaseWhenAlreadyEwokNotAcquiredTest(){
-        assertThrows(RuntimeException.class, ()->ewok.release());
+    public void releaseWhenEwokNotAcquiredTest(){
+        assertThrows(RuntimeException.class,()->ewok.release());
     }
 }

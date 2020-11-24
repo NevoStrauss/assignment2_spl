@@ -27,7 +27,13 @@ public class FutureTest {
         String str = "someResult";
         future.resolve(str);
         assertTrue(future.isDone());
-        assertTrue(str.equals(future.get()));
+        assertEquals(future.get(), str);
+    }
+
+    @Test
+    public void doubleResolveTest(){
+        future.resolve("");
+        assertThrows(RuntimeException.class,()->future.resolve(""));
     }
 
     @Test
@@ -39,13 +45,19 @@ public class FutureTest {
 
     @Test
     public void testGet(){
+        assertFalse(future.isDone());
+        String s = "some result";
+        future.resolve(s);
         String result = future.get();
         assertTrue(future.isDone());
-        assertNotNull(result);
+        assertEquals(result,s);
     }
 
     @Test
-    public void testGet(long timeout, TimeUnit unit){
-
+    public void testGetWithTimeOut() throws InterruptedException {
+        assertFalse(future.isDone());
+        future.get(100, TimeUnit.MILLISECONDS);
+        assertFalse(future.isDone());
+        future.resolve("foo");
     }
 }

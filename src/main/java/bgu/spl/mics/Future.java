@@ -46,6 +46,8 @@ public class Future<T> {
 //	@PRE: @PRE(isDone())=false, @PRE(get(0,millisconds))=null
 //	@POST: @POST(isDone())=true, @POST(get(0,milliseconds))=@param(result))
 	public void resolve (T result) {
+		if (isDone)
+			throw new RuntimeException("Already resolved");
 		isDone=true;
 		this.result=result;
 	}
