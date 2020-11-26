@@ -20,9 +20,16 @@ class MessageBusImplTest {
         assertEquals(messageBus1,messageBus);
     }
 
+    /**
+     * this method is being tested in complete() and sendEvent()
+     */
 //    @Test
 //    void subscribeEvent() {
 //    }
+
+    /**
+     * this method is being tested in complete() and sendBroadcast()
+     */
 
 //    @Test
 //    void subscribeBroadcast() {
@@ -91,9 +98,17 @@ class MessageBusImplTest {
         messageBus.unregister(ms2);
     }
 
+    /**
+     * this method is the very basic of the class. if any other test passes, this works
+     */
+
 //    @Test
 //    void register() {
 //    }
+
+    /**
+     * this method is the very basic of the class. if any other test passes, this works
+     */
 
 //    @Test
 //    void unregister() {

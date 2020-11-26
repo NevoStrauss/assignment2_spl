@@ -38,7 +38,7 @@ public class EwokTest {
     }
 
     @Test
-    public void releaseWhenEwokNotAcquiredTest(){
+    public void releaseWhenNotAcquiredTest(){
         assertThrows(RuntimeException.class,()->ewok.release());
     }
 }

@@ -1,8 +1,10 @@
 package bgu.spl.mics.application.services;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
+import bgu.spl.mics.Future;
+import bgu.spl.mics.MessageBus;
+import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.messages.AttackEvent;
@@ -25,6 +27,22 @@ public class LeiaMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
-    	
+        HashMap<Integer,Future> futureMap = new HashMap<>();
+        int i = 0;
+        for (Attack attack:attacks) {
+            Future f = sendEvent(new AttackEvent(attack));
+            futureMap.put(i,f);
+            i++;
+        }
+        for (int j = 0; j < i; j++){
+            while (!futureMap.get(j).isDone()){
+                continue;
+            }
+            futureMap.remove(j);
+        }
+    }
+
+    public int getTotalAttack(){
+        return attacks.length;
     }
 }

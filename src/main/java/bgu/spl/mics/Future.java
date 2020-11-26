@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * No public constructor is allowed except for the empty constructor.
  */
 public class Future<T> {
-	private boolean isDone;
+	private volatile boolean isDone;
 	private T result;
 
 	/**
@@ -31,12 +31,13 @@ public class Future<T> {
 	 *
 	 */
 
-//	@PRE: none
-//	@POST: @POST(isDone)==true
+	/**
+	 * @PRE: none
+	 * @POST: @POST(isDone)==true
+	 */
 	public T get() {
-		if (!isDone)
-			//wait until is done
-			return result;
+		while (!isDone){
+		}
 		return result;
 	}
 

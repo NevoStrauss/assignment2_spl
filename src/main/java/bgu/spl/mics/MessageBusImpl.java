@@ -2,6 +2,7 @@ package bgu.spl.mics;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 /**
@@ -12,12 +13,16 @@ import java.util.Queue;
 public class MessageBusImpl implements MessageBus {
 
 	//fields
-	private HashMap<Class,Queue<Message>> my_map;
+	private HashMap<Class,Queue<Message>> queueMap;
+	private HashMap<Class, List<MicroService>> eventMap;
+	private HashMap<Class,List<MicroService>> broadcastMap;
 	private static MessageBusImpl single_instance = null;
 
 	//CTR
 	private MessageBusImpl(){
-		my_map = new HashMap<Class, Queue<Message>>();
+		queueMap = new HashMap<>();
+		eventMap = new HashMap<>();
+		broadcastMap = new HashMap<>();
 	}
 
 	//methods
@@ -27,14 +32,26 @@ public class MessageBusImpl implements MessageBus {
 		return single_instance;
 	}
 
+	/**
+	 * if {@code m} is already subscribed to {@code type}, do nothing
+	 * @param type The type to subscribe to,
+	 * @param m    The subscribing micro-service.
+	 * @param <T>
+	 */
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-		
+		if (!eventMap.containsKey(type))
+			eventMap.put(type,new LinkedList<>());
+		if (!eventMap.get(type).contains(m))
+			eventMap.get(type).add(m);
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		
+		if (!broadcastMap.containsKey(type))
+			broadcastMap.put(type,new LinkedList<>());
+		if (!broadcastMap.get(type).contains(m))
+			broadcastMap.get(type).add(m);
     }
 
 	@Override @SuppressWarnings("unchecked")
@@ -56,8 +73,8 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
-		if (!my_map.containsKey(m.getClass()))
-			my_map.put(m.getClass(), new LinkedList<>());
+		if (!queueMap.containsKey(m.getClass()))
+			queueMap.put(m.getClass(), new LinkedList<>());
 	}
 
 	@Override
@@ -67,11 +84,11 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
-		if (!my_map.containsKey(m.getClass()))
+		if (!queueMap.containsKey(m.getClass()))
 			throw new InterruptedException(m.getClass()+" hasn't been registered to the message bus");
-		if (my_map.get(m.getClass()).isEmpty()) {
+		if (queueMap.get(m.getClass()).isEmpty()) {
 		//waits until there is a message
 		}
-		return my_map.get(m.getClass()).poll();
+		return queueMap.get(m.getClass()).poll();
 	}
 }
