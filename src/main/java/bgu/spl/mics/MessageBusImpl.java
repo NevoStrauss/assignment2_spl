@@ -16,6 +16,7 @@ public class MessageBusImpl implements MessageBus {
 	private HashMap<Class,Queue<Message>> queueMap;
 	private HashMap<Class, List<MicroService>> eventMap;
 	private HashMap<Class,List<MicroService>> broadcastMap;
+	private HashMap<Event,Future> futureMap;
 	private static MessageBusImpl single_instance = null;
 
 	//CTR
@@ -23,6 +24,7 @@ public class MessageBusImpl implements MessageBus {
 		queueMap = new HashMap<>();
 		eventMap = new HashMap<>();
 		broadcastMap = new HashMap<>();
+		futureMap = new HashMap<>();
 	}
 
 	//methods
@@ -38,6 +40,7 @@ public class MessageBusImpl implements MessageBus {
 	 * @param m    The subscribing micro-service.
 	 * @param <T>
 	 */
+
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
 		if (!eventMap.containsKey(type))
