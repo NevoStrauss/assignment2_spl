@@ -20,9 +20,9 @@ public class Ewok {
      * @PRE: available=true
      * @POST: available=false
      */
-    public void acquire() {
+    public void acquire() throws InterruptedException {
 		if (!available)
-		    throw new RuntimeException("Ewok is not available");
+		    throw new InterruptedException("Ewok is not available");
 		available=false;
     }
 
@@ -31,9 +31,9 @@ public class Ewok {
      * @PRE: available=false
      * @POST: available=true
      */
-    public void release() {
+    public void release() throws InterruptedException {
     	if(available)
-    	    throw new RuntimeException("Ewok is already released");
+    	    throw new InterruptedException("Ewok is already released");
     	available=true;
     }
 

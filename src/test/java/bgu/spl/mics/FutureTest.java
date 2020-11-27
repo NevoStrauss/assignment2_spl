@@ -1,14 +1,9 @@
 package bgu.spl.mics;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.AfterAll;
-
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
-
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,11 +48,20 @@ public class FutureTest {
         assertEquals(result,s);
     }
 
+    /**
+     * Test flow:
+     * 1. check that future is not resolved.
+     * 2. try to get the result in time limits.
+     * 3. check that future is still unresolved.
+     * 4. resolve future, try to get the result, and check if its resolved.
+     */
+
     @Test
-    public void testGetWithTimeOut() throws InterruptedException {
+    public void testGetWithTimeOut(){
         assertFalse(future.isDone());
         future.get(100, TimeUnit.MILLISECONDS);
         assertFalse(future.isDone());
-        future.resolve("foo");
+        future.resolve("some result");
+        assertEquals(future.get(100, TimeUnit.MICROSECONDS),"some result");
     }
 }

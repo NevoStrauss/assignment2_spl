@@ -1,12 +1,8 @@
 package bgu.spl.mics;
+
 import bgu.spl.mics.application.passiveObjects.Ewok;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.AfterAll;
-
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,27 +14,39 @@ public class EwokTest {
 
     @Test
     public void acquireTest(){
-        assertTrue(ewok.isAvailable());
-        ewok.acquire();
-        assertFalse(ewok.isAvailable());
+        try {
+            assertTrue(ewok.isAvailable());
+            ewok.acquire();
+            assertFalse(ewok.isAvailable());
+        } catch (InterruptedException e){
+            fail();
+        }
     }
 
     @Test
     public void releaseTest(){
-        ewok.acquire();
-        assertFalse(ewok.isAvailable());
-        ewok.release();
-        assertTrue(ewok.isAvailable());
+        try {
+            ewok.acquire();
+            assertFalse(ewok.isAvailable());
+            ewok.release();
+            assertTrue(ewok.isAvailable());
+        }catch (InterruptedException e){
+            fail();
+        }
     }
 
     @Test
     public void acquireWhenAlreadyAcquiredTest(){
-        ewok.acquire();
-        assertThrows(RuntimeException.class,()->ewok.acquire());
+        try {
+            ewok.acquire();
+        }catch (InterruptedException e){
+            fail();
+        }
+        assertThrows(InterruptedException.class,()->ewok.acquire());
     }
 
     @Test
     public void releaseWhenNotAcquiredTest(){
-        assertThrows(RuntimeException.class,()->ewok.release());
+        assertThrows(InterruptedException.class,()->ewok.release());
     }
 }

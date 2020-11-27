@@ -1,7 +1,5 @@
 package bgu.spl.mics;
 
-import bgu.spl.mics.application.messages.StringEvent;
-
 public class MS extends MicroService{
 
 

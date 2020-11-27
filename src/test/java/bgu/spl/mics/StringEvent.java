@@ -1,6 +1,4 @@
-package bgu.spl.mics.application.messages;
-
-import bgu.spl.mics.Event;
+package bgu.spl.mics;
 
 public class StringEvent implements Event<String> {
     private String name;
