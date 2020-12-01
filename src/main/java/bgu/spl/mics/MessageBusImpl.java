@@ -47,6 +47,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
+		register(m);
 		if (!eventMap.containsKey(type)) {
 			eventMap.put(type, new LinkedList<>());
 			subscribeMap.put(m.getClass(),new LinkedList<>());
@@ -59,6 +60,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
+		register(m);
 		if (!broadcastMap.containsKey(type))
 			broadcastMap.put(type,new LinkedList<>());
 		if (!broadcastMap.get(type).contains(m))
