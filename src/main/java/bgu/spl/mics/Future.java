@@ -37,6 +37,10 @@ public class Future<T> {
 	 */
 	public T get() {
 		while (!isDone){
+			try {
+				wait();
+			}
+			catch (InterruptedException e){}
 		}
 		return result;
 	}
@@ -74,13 +78,13 @@ public class Future<T> {
 	 *         elapsed, return null.
 	 */
 
-//	@PRE: none
-//	@POST: if isDone(): result!=null, else: @POST(System.currentmillis())=@PRE(System.currentmillis())+timeout in unit
 	public T get(long timeout, TimeUnit unit) {
-		if (!isDone)
-			//wait timout in unit
-			return result;
-
-		return null;
+		long endTime = System.currentTimeMillis()+unit.toMillis(timeout);
+		while (!isDone && System.currentTimeMillis()<endTime) {
+			try {
+				wait(unit.toMillis(timeout));
+			} catch (InterruptedException e) {}
+		}
+		return result;
 	}
 }

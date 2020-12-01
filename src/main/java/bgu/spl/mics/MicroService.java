@@ -57,8 +57,10 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback) {
-    	messageBus.subscribeEvent(type,this);
-
+        if (!callbackHashMap.containsKey(type)) {
+            messageBus.subscribeEvent(type, this);
+            callbackHashMap.put(type, callback);
+        }
     }
 
     /**
@@ -82,7 +84,10 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback) {
-    	
+    	if (!callbackHashMap.containsKey(type)){
+    	    messageBus.subscribeBroadcast(type,this);
+    	    callbackHashMap.put(type,callback);
+        }
     }
 
     /**
@@ -98,8 +103,7 @@ public abstract class MicroService implements Runnable {
      * 	       			null in case no micro-service has subscribed to {@code e.getClass()}.
      */
     protected final <T> Future<T> sendEvent(Event<T> e) {
-
-        return null; 
+        return messageBus.sendEvent(e);
     }
 
     /**
@@ -109,7 +113,7 @@ public abstract class MicroService implements Runnable {
      * @param b The broadcast message to send
      */
     protected final void sendBroadcast(Broadcast b) {
-    	
+    	messageBus.sendBroadcast(b);
     }
 
     /**
@@ -123,7 +127,7 @@ public abstract class MicroService implements Runnable {
      *               {@code e}.
      */
     protected final <T> void complete(Event<T> e, T result) {
-    	
+    	messageBus.complete(e,result);
     }
 
     /**
@@ -136,7 +140,7 @@ public abstract class MicroService implements Runnable {
      * message.
      */
     protected final void terminate() {
-    	
+        messageBus.unregister(this);
     }
 
     /**
@@ -144,7 +148,7 @@ public abstract class MicroService implements Runnable {
      *         construction time and is used mainly for debugging purposes.
      */
     public final String getName() {
-        return null;
+        return name;
     }
 
     /**
