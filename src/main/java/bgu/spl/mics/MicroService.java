@@ -1,5 +1,7 @@
 package bgu.spl.mics;
 
+import java.util.HashMap;
+
 /**
  * The MicroService is an abstract class that any micro-service in the system
  * must extend. The abstract MicroService class is responsible to get and
@@ -19,13 +21,18 @@ package bgu.spl.mics;
  * <p>
  */
 public abstract class MicroService implements Runnable {
+    private String name;
+    private MessageBus messageBus;
+    private HashMap<Class,Callback> callbackHashMap;
 
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
      *             does not have to be unique)
      */
     public MicroService(String name) {
-
+        this.name=name;
+        messageBus = MessageBusImpl.getInstance();
+        callbackHashMap = new HashMap<>();
     }
 
     /**
@@ -50,7 +57,8 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback) {
-    	
+    	messageBus.subscribeEvent(type,this);
+
     }
 
     /**
