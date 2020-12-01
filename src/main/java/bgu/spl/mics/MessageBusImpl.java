@@ -56,6 +56,7 @@ public class MessageBusImpl implements MessageBus {
 			eventMap.get(type).add(m);
 			subscribeMap.get(m.getClass()).add(type);
 		}
+		notifyAll();
 	}
 
 	@Override

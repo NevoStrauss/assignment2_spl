@@ -4,6 +4,9 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.FinishedSubscribedBroadcast;
+import bgu.spl.mics.application.messages.NoMoreAttacksBroadcast;
+import bgu.spl.mics.application.messages.TerminateBroadcast;
+import bgu.spl.mics.application.passiveObjects.Diary;
 
 
 /**
@@ -24,5 +27,13 @@ public class HanSoloMicroservice extends AttackingMicroService {
     @Override
     protected void initialize() {
         super.initialize();
+        subscribeBroadcast(NoMoreAttacksBroadcast.class,(NoMoreAttacksBroadcast noMoreAttacksBroadcast)->
+                Diary.getInstance().setHanSoloFinish(System.currentTimeMillis()));
+        subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
+            {
+                terminate();
+                Diary.getInstance().setHanSoloTerminate(System.currentTimeMillis());
+            });
+
     }
 }

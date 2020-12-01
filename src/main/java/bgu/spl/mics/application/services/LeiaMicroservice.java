@@ -3,10 +3,8 @@ package bgu.spl.mics.application.services;
 import java.util.*;
 
 import bgu.spl.mics.*;
-import bgu.spl.mics.application.messages.FinishedSubscribedBroadcast;
-import bgu.spl.mics.application.messages.StartSendAttacks;
+import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.passiveObjects.Attack;
-import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.passiveObjects.Diary;
 
 /**
@@ -42,14 +40,21 @@ public class LeiaMicroservice extends MicroService {
                     futureMap.put(i, f);
                     i++;
                 }
+                sendBroadcast(new NoMoreAttacksBroadcast());
                 for (int j = 0; j < i; j++) {
                     Boolean result = futureMap.get(j).get();
                     futureMap.remove(j);
                 }
-                future
+                Future<Boolean> f = sendEvent(new DeactivationEvent());
             }
         };
             subscribeBroadcast(FinishedSubscribedBroadcast.class, callback1);
+        subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
+        {
+            Diary d = Diary.getInstance();
+            terminate();
+            d.setLeiaTerminate(System.currentTimeMillis());
+        });
     }
 
     public int getTotalAttack(){
