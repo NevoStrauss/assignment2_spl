@@ -1,6 +1,5 @@
 package bgu.spl.mics.application.passiveObjects;
 
-
 import java.util.LinkedList;
 import java.util.List;
 
