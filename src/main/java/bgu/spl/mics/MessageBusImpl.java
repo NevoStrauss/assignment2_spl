@@ -65,6 +65,7 @@ public class MessageBusImpl implements MessageBus {
 			broadcastMap.put(type,new LinkedList<>());
 		if (!broadcastMap.get(type).contains(m))
 			broadcastMap.get(type).add(m);
+		notifyAll();
     }
 
 	@Override @SuppressWarnings("unchecked")
@@ -75,15 +76,25 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
-		for(MicroService m : broadcastMap.get(b.getClass())){
-			queueMap.get(m.getClass()).offer(b);
+		while (!broadcastMap.containsKey(b.getClass())) {
+			try {
+				wait();
+			} catch (InterruptedException ignored) {}
 		}
-		notifyAll();
-	}
+			for (MicroService m : broadcastMap.get(b.getClass())) {
+				queueMap.get(m.getClass()).offer(b);
+			}
+			notifyAll();
+		}
 
 	
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
+		while (!eventMap.containsKey(e.getClass())){
+			try{
+				wait();
+			}catch (InterruptedException ignored){}
+		}
 		MicroService m = eventMap.get(e.getClass()).poll();
 		queueMap.get(m.getClass()).offer(e);
 		eventMap.get(e.getClass()).offer(m);

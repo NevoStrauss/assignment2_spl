@@ -3,6 +3,7 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.messages.FinishedSubscribedBroadcast;
 
 
 /**
@@ -13,7 +14,7 @@ import bgu.spl.mics.application.messages.AttackEvent;
  * You can add private fields and public methods to this class.
  * You MAY change constructor signatures and even add new public constructors.
  */
-public class HanSoloMicroservice extends MicroService {
+public class HanSoloMicroservice extends AttackingMicroService {
 
     public HanSoloMicroservice() {
         super("Han");
@@ -22,6 +23,6 @@ public class HanSoloMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
-
+        super.initialize();
     }
 }

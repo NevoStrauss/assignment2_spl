@@ -2,12 +2,12 @@ package bgu.spl.mics.application.services;
 
 import java.util.*;
 
-import bgu.spl.mics.Future;
-import bgu.spl.mics.MessageBus;
-import bgu.spl.mics.MessageBusImpl;
-import bgu.spl.mics.MicroService;
+import bgu.spl.mics.*;
+import bgu.spl.mics.application.messages.FinishedSubscribedBroadcast;
+import bgu.spl.mics.application.messages.StartSendAttacks;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.passiveObjects.Diary;
 
 /**
  * LeiaMicroservices Initialized with Attack objects, and sends them as  {@link AttackEvent}.
@@ -19,27 +19,37 @@ import bgu.spl.mics.application.messages.AttackEvent;
  */
 public class LeiaMicroservice extends MicroService {
 	private Attack[] attacks;
+	private int numOfAttackers;
+	private int counter;
 	
-    public LeiaMicroservice(Attack[] attacks) {
+    public LeiaMicroservice(Attack[] attacks,int numOfAttackers) {
         super("Leia");
 		this.attacks = attacks;
+		this.numOfAttackers = numOfAttackers;
+		counter = 0;
     }
 
     @Override
     protected void initialize() {
-        HashMap<Integer,Future> futureMap = new HashMap<>();
-        int i = 0;
-        for (Attack attack:attacks) {
-            Future f = sendEvent(new AttackEvent(attack));
-            futureMap.put(i,f);
-            i++;
-        }
-        for (int j = 0; j < i; j++){
-            while (!futureMap.get(j).isDone()){
-                continue;
+        Callback<FinishedSubscribedBroadcast> callback1 = (FinishedSubscribedBroadcast fs) ->
+        {
+            counter++;
+            if (counter == numOfAttackers) {
+                HashMap<Integer, Future<Boolean>> futureMap = new HashMap<>();
+                int i = 0;
+                for (Attack attack : attacks) {
+                    Future<Boolean> f = sendEvent(new AttackEvent(attack));
+                    futureMap.put(i, f);
+                    i++;
+                }
+                for (int j = 0; j < i; j++) {
+                    Boolean result = futureMap.get(j).get();
+                    futureMap.remove(j);
+                }
+                future
             }
-            futureMap.remove(j);
-        }
+        };
+            subscribeBroadcast(FinishedSubscribedBroadcast.class, callback1);
     }
 
     public int getTotalAttack(){

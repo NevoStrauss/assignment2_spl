@@ -3,6 +3,7 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.messages.FinishedSubscribedBroadcast;
 import bgu.spl.mics.application.passiveObjects.Attack;
 
 
@@ -22,6 +23,6 @@ public class C3POMicroservice extends AttackingMicroService {
 
     @Override
     protected void initialize() {
-        subscribeEvent(AttackEvent.class,(AttackEvent attack)->{try{wait(attack.getAttack().getDuration());}catch (InterruptedException e){}});
+        super.initialize();
     }
 }
