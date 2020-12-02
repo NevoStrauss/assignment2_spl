@@ -1,9 +1,14 @@
 package bgu.spl.mics.application;
 
+import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewok;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 import bgu.spl.mics.application.services.*;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
@@ -16,24 +21,47 @@ import java.nio.file.Paths;
 public class Main {
 	public static void main(String[] args) {
 		OperationData operationData = new OperationData();
+		String path = args[0];
+		Gson gson = new Gson();
 		try {
-			Gson gson = new Gson();
-			Reader reader = Files.newBufferedReader(Paths.get(String.valueOf(args)));
-			operationData = gson.fromJson(reader,operationData.getClass());
+			Reader reader = Files.newBufferedReader(Paths.get(String.valueOf(path)));
+			operationData = gson.fromJson(reader,OperationData.class);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		MicroService[] microServices = new MicroService[5];
 
-		LeiaMicroservice leia = new LeiaMicroservice(operationData.getAttacks(), 2);
-		HanSoloMicroservice han = new HanSoloMicroservice();
-		C3POMicroservice c3po = new C3POMicroservice();
-		R2D2Microservice r2d2 = new R2D2Microservice(operationData.getR2D2());
-		LandoMicroservice lando = new LandoMicroservice(operationData.getLando());
+		microServices[0] = new LeiaMicroservice(operationData.getAttacks());
+		microServices[1] = new HanSoloMicroservice();
+		microServices[2] = new C3POMicroservice();
+		microServices[3] = new R2D2Microservice(operationData.getR2D2());
+		microServices[4] = new LandoMicroservice(operationData.getLando());
 
 		int ewok = operationData.getEwoks();
-		Ewoks ewoks= Ewoks.getSingle_instance();
+		Ewok[] ewoksArray = new Ewok[ewok+1];
 		for (int i=1;i<=ewok;i++){
-			ewoks.add(new Ewok(i));
+			ewoksArray[i] = new Ewok(i);
 		}
+		Ewoks.getInstance().setEwokArray(ewoksArray);
+		Thread[] threads = new Thread[microServices.length];
+		for(int i =0 ; i<threads.length;i++){
+			threads[i] = new Thread(microServices[i]);
+			System.out.println(microServices[i].getName()+" is "+threads[i].getName());
+		}
+		for (int i = 0 ; i < threads.length; i++){
+			threads[i].start();
+		}
+		for (int i = 0 ; i < threads.length; i++){
+			try {
+				threads[i].join();
+			}catch (InterruptedException e){}
+		}
+		System.out.println(gson.toJson(Diary.getInstance()));
+		Gson gson1 = new GsonBuilder().create();
+		try {
+			gson1.toJson(Diary.getInstance(), new FileWriter("./output.json"));
+		}catch (IOException e){}
 	}
+
+
 }
