@@ -17,13 +17,11 @@ import bgu.spl.mics.application.passiveObjects.Diary;
  */
 public class LeiaMicroservice extends MicroService {
 	private Attack[] attacks;
-	private int numOfAttackers;
 	private int counter;
 	
-    public LeiaMicroservice(Attack[] attacks,int numOfAttackers) {
+    public LeiaMicroservice(Attack[] attacks) {
         super("Leia");
 		this.attacks = attacks;
-		this.numOfAttackers = numOfAttackers;
 		counter = 0;
     }
 
@@ -32,7 +30,7 @@ public class LeiaMicroservice extends MicroService {
         Callback<FinishedSubscribedBroadcast> callback1 = (FinishedSubscribedBroadcast fs) ->
         {
             counter++;
-            if (counter == numOfAttackers) {
+            if (counter == 2) {
                 HashMap<Integer, Future<Boolean>> futureMap = new HashMap<>();
                 int i = 0;
                 for (Attack attack : attacks) {

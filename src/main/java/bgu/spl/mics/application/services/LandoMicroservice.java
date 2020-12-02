@@ -31,9 +31,8 @@ public class LandoMicroservice  extends MicroService {
        });
        subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
        {
-           Diary d = Diary.getInstance();
            terminate();
-           d.setLandoTerminate(System.currentTimeMillis());
+           Diary.getInstance().setLandoTerminate(System.currentTimeMillis());
        });
     }
 }

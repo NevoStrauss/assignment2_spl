@@ -15,11 +15,11 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class MessageBusImpl implements MessageBus {
 
 	//fields
-	private ConcurrentHashMap<Class, Queue<Message>> queueMap;
-	private ConcurrentHashMap<Class, Queue<MicroService>> eventMap;
-	private ConcurrentHashMap<Class,List<MicroService>> broadcastMap;
+	private ConcurrentHashMap<String, Queue<Message>> queueMap;
+	private ConcurrentHashMap<Class<? extends Event>, Queue<MicroService>> eventMap;
+	private ConcurrentHashMap<Class<? extends Broadcast>,List<MicroService>> broadcastMap;
 	private ConcurrentHashMap<Event,Future> futureMap;
-	private ConcurrentHashMap<Class,List<Class>> subscribeMap;
+	private ConcurrentHashMap<String,List<Class>> subscribeMap;
 	private static MessageBusImpl single_instance = null;
 
 	//CTR
@@ -48,81 +48,103 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
 		register(m);
-		if (!eventMap.containsKey(type)) {
-			eventMap.put(type, new LinkedList<>());
-			subscribeMap.put(m.getClass(),new LinkedList<>());
+		synchronized (eventMap) {
+			if (!eventMap.containsKey(type))
+				eventMap.putIfAbsent(type, new LinkedList<>());
 		}
-		if (!eventMap.get(type).contains(m)) {
-			eventMap.get(type).add(m);
-			subscribeMap.get(m.getClass()).add(type);
+		synchronized (eventMap.get(type)){
+			if (!subscribeMap.containsKey(m.getName()))
+				subscribeMap.put(m.getName(),new LinkedList<>());
+
+			if (!eventMap.get(type).contains(m)) {
+				eventMap.get(type).add(m);
+				subscribeMap.get(m.getName()).add(type);
+			}
+			eventMap.get(type).notifyAll();
 		}
-		notifyAll();
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
 		register(m);
-		if (!broadcastMap.containsKey(type))
-			broadcastMap.put(type,new LinkedList<>());
-		if (!broadcastMap.get(type).contains(m))
-			broadcastMap.get(type).add(m);
-		notifyAll();
-    }
+		synchronized (broadcastMap) {
+			if (!broadcastMap.containsKey(type)) {
+				broadcastMap.put(type, new LinkedList<>());
+				broadcastMap.notifyAll();
+			}
+		}
+		synchronized (broadcastMap.get(type)){
+			if (!broadcastMap.get(type).contains(m))
+				broadcastMap.get(type).add(m);
+			broadcastMap.get(type).notifyAll();
+		}
+	}
 
 	@Override @SuppressWarnings("unchecked")
 	public <T> void complete(Event<T> e, T result) {
 		futureMap.get(e).resolve(result);
-		notifyAll();
 	}
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
-		while (!broadcastMap.containsKey(b.getClass())) {
-			try {
-				wait();
-			} catch (InterruptedException ignored) {}
-		}
-			for (MicroService m : broadcastMap.get(b.getClass())) {
-				queueMap.get(m.getClass()).offer(b);
+		synchronized (broadcastMap) {
+			while (!broadcastMap.containsKey(b.getClass())) {
+				try {
+					broadcastMap.wait();
+				} catch (InterruptedException ignored) {
+				}
 			}
-			notifyAll();
 		}
+		synchronized (broadcastMap.get(b.getClass())){
+			for (MicroService m : broadcastMap.get(b.getClass())) {
+				synchronized (queueMap.get(m.getName())) {
+					queueMap.get(m.getName()).offer(b);
+					queueMap.get(m.getName()).notifyAll();
+				}
+			}
+		}
+	}
 
-	
+
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-		while (!eventMap.containsKey(e.getClass())){
-			try{
-				wait();
-			}catch (InterruptedException ignored){}
+		synchronized (eventMap) {
+			while (!eventMap.containsKey(e.getClass())) {
+				try {
+					eventMap.wait();
+				} catch (InterruptedException ignored) {}
+			}
+			MicroService m = eventMap.get(e.getClass()).poll();
+			assert m != null;
+			queueMap.get(m.getName()).offer(e);
+			eventMap.get(e.getClass()).offer(m);
 		}
-		MicroService m = eventMap.get(e.getClass()).poll();
-		queueMap.get(m.getClass()).offer(e);
-		eventMap.get(e.getClass()).offer(m);
 		Future<T> f = new Future<>();
 		futureMap.put(e,f);
-		notifyAll();
+		synchronized (queueMap) {
+			queueMap.notifyAll();
+		}
 		return f;
 	}
 
 	@Override
 	public void register(MicroService m) {
 		if (!isRegistered(m))
-			queueMap.put(m.getClass(), new LinkedList<>());
+			queueMap.put(m.getName(), new LinkedList<>());
 	}
 
 	@Override
 	public void unregister(MicroService m) {
-		if (isRegistered(m)){
-			for (Class c:subscribeMap.get(m.getClass())){
+		if (isRegistered(m) & !subscribeMap.isEmpty()){
+			for (Class c:subscribeMap.get(m.getName())){
 				unsubscribeEventOrBroadcast(c,m);
 			}
+			queueMap.remove(m.getName());
 		}
-		queueMap.remove(m.getClass());
 	}
 
 	private boolean isRegistered(MicroService m){
-		return queueMap.contains(m.getClass());
+		return queueMap.containsKey(m.getName());
 	}
 
 
@@ -139,12 +161,13 @@ public class MessageBusImpl implements MessageBus {
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 		if (!isRegistered(m))
 			throw new InterruptedException(m.getName()+" hasn't been registered to the message bus");
-		while (queueMap.get(m.getClass()).isEmpty()) {
-			try {
-				wait();
+		synchronized (queueMap) {
+			while (queueMap.get(m.getName()).isEmpty()) {
+				try {
+					queueMap.wait();
+				}catch(InterruptedException e){}
 			}
-			catch (InterruptedException e){}
 		}
-		return queueMap.get(m.getClass()).poll();
+		return queueMap.get(m.getName()).poll();
 	}
 }

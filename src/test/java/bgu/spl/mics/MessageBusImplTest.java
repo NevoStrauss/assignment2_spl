@@ -8,10 +8,10 @@ import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusImplTest {
-    private MessageBus messageBus;
+    private static MessageBus messageBus;
 
     @BeforeAll
-    public void setUp(){messageBus = MessageBusImpl.getInstance();}
+    public static void setUp(){messageBus = MessageBusImpl.getInstance();}
 
     @Test
     void getInstance() {

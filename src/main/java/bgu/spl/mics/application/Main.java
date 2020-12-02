@@ -16,15 +16,16 @@ import java.nio.file.Paths;
 public class Main {
 	public static void main(String[] args) {
 		OperationData operationData = new OperationData();
+		String path = args[0];
 		try {
 			Gson gson = new Gson();
-			Reader reader = Files.newBufferedReader(Paths.get(String.valueOf(args)));
+			Reader reader = Files.newBufferedReader(Paths.get(String.valueOf(path)));
 			operationData = gson.fromJson(reader,operationData.getClass());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		LeiaMicroservice leia = new LeiaMicroservice(operationData.getAttacks(), 2);
+		LeiaMicroservice leia = new LeiaMicroservice(operationData.getAttacks());
 		HanSoloMicroservice han = new HanSoloMicroservice();
 		C3POMicroservice c3po = new C3POMicroservice();
 		R2D2Microservice r2d2 = new R2D2Microservice(operationData.getR2D2());

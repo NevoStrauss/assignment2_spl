@@ -35,7 +35,7 @@ public class Future<T> {
 	 * @PRE: none
 	 * @POST: @POST(isDone)==true
 	 */
-	public T get() {
+	public synchronized T get() {
 		while (!isDone){
 			try {
 				wait();
@@ -48,20 +48,19 @@ public class Future<T> {
 	/**
 	 * Resolves the result of this Future object.
 	 */
-//	@PRE: @PRE(isDone())=false, @PRE(get(0,millisconds))=null
-//	@POST: @POST(isDone())=true, @POST(get(0,milliseconds))=@param(result))
-	public void resolve (T result) {
+
+	public synchronized void resolve (T result) {
 		if (isDone)
 			throw new RuntimeException("Already resolved");
-		isDone=true;
 		this.result=result;
+		isDone=true;
+		notifyAll();
 	}
 
 	/**
 	 * @return true if this object has been resolved, false otherwise
 	 */
-//	@PRE: none
-//	@POST: @POST(isDone())=@PRE(isDone())
+
 	public boolean isDone() {
 		return isDone;
 	}
@@ -78,11 +77,12 @@ public class Future<T> {
 	 *         elapsed, return null.
 	 */
 
-	public T get(long timeout, TimeUnit unit) {
+	public synchronized T get(long timeout, TimeUnit unit) {
 		long endTime = System.currentTimeMillis()+unit.toMillis(timeout);
 		while (!isDone && System.currentTimeMillis()<endTime) {
 			try {
 				wait(unit.toMillis(timeout));
+
 			} catch (InterruptedException e) {}
 		}
 		return result;
