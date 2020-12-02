@@ -28,11 +28,14 @@ public class C3POMicroservice extends AttackingMicroService {
     protected void initialize() {
         super.initialize();
         subscribeBroadcast(NoMoreAttacksBroadcast.class,(NoMoreAttacksBroadcast noMoreAttacksBroadcast)->
-                Diary.getInstance().setC3POFinish(System.currentTimeMillis()));
+        {Diary.getInstance().setC3POFinish(System.currentTimeMillis());
+            System.out.println(getName()+" finished attacking at "+System.currentTimeMillis());});
+        sendBroadcast(new FinishedSubscribedBroadcast());
         subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
         {
             terminate();
             Diary.getInstance().setC3POTerminate(System.currentTimeMillis());
         });
+        System.out.println("C3PO finished subscribing");
     }
 }

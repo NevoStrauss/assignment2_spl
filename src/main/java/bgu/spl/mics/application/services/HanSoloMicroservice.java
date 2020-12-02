@@ -28,12 +28,15 @@ public class HanSoloMicroservice extends AttackingMicroService {
     protected void initialize() {
         super.initialize();
         subscribeBroadcast(NoMoreAttacksBroadcast.class,(NoMoreAttacksBroadcast noMoreAttacksBroadcast)->
-                Diary.getInstance().setHanSoloFinish(System.currentTimeMillis()));
+        {Diary.getInstance().setHanSoloFinish(System.currentTimeMillis());
+            System.out.println(getName()+" finished attacking at " + System.currentTimeMillis());});
+        sendBroadcast(new FinishedSubscribedBroadcast());
         subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
             {
                 terminate();
                 Diary.getInstance().setHanSoloTerminate(System.currentTimeMillis());
             });
+        System.out.println("Han Solo finished subscribing");
 
     }
 }

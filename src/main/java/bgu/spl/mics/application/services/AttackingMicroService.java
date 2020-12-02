@@ -32,9 +32,10 @@ public class AttackingMicroService extends MicroService {
                 Thread.sleep(attackEvent.getAttack().getDuration());
             } catch (InterruptedException ignored) {}
             complete(attackEvent,true);
+            System.out.println(getName()+" finished attack with Ewoks: "+ewokSerialNumbers.toString());
             ewoks.release(ewokSerialNumbers);
             Diary.getInstance().addAttack();
         });
-        sendBroadcast(new FinishedSubscribedBroadcast());
+        System.out.println(getName()+" finished subscribing to attackEvents");
     }
 }
