@@ -14,34 +14,25 @@ public class EwokTest {
 
     @Test
     public void acquireTest(){
-        try {
+
             assertTrue(ewok.isAvailable());
             ewok.acquire();
             assertFalse(ewok.isAvailable());
-        } catch (InterruptedException e){
-            fail();
-        }
+
     }
 
     @Test
     public void releaseTest(){
-        try {
+
             ewok.acquire();
             assertFalse(ewok.isAvailable());
             ewok.release();
             assertTrue(ewok.isAvailable());
-        }catch (InterruptedException e){
-            fail();
-        }
     }
 
     @Test
     public void acquireWhenAlreadyAcquiredTest(){
-        try {
-            ewok.acquire();
-        }catch (InterruptedException e){
-            fail();
-        }
+        ewok.acquire();
         assertThrows(InterruptedException.class,()->ewok.acquire());
     }
 

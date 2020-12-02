@@ -7,6 +7,8 @@ import bgu.spl.mics.application.messages.NoMoreAttacksBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
+import java.util.List;
+
 public class AttackingMicroService extends MicroService {
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
@@ -23,11 +25,15 @@ public class AttackingMicroService extends MicroService {
     protected void initialize(){
         subscribeEvent(AttackEvent.class, (AttackEvent attackEvent)->
         {
+            List<Integer> ewokSerialNumbers = attackEvent.getAttack().getSerials();
+            Ewoks ewoks = Ewoks.getInstance();
+            ewoks.acquire(ewokSerialNumbers);
             try {
-            Thread.sleep(attackEvent.getAttack().getDuration());
-        } catch (InterruptedException ignored) {}
-        complete(attackEvent,true);
-        Diary.getInstance().addAttack();
+                Thread.sleep(attackEvent.getAttack().getDuration());
+            } catch (InterruptedException ignored) {}
+            complete(attackEvent,true);
+            ewoks.release(ewokSerialNumbers);
+            Diary.getInstance().addAttack();
         });
         sendBroadcast(new FinishedSubscribedBroadcast());
     }

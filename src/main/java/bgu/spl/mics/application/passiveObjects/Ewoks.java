@@ -15,19 +15,32 @@ import java.util.List;
 public class Ewoks {
 
     private static Ewoks single_instance=null;
-    private List<Ewok> ewokList;
+    private Ewok[] ewokArray;
 
     private Ewoks(){
-        this.ewokList=new LinkedList<>();
+        this.ewokArray=new Ewok[0];
     }
-    public static Ewoks getSingle_instance(){
+
+    public static Ewoks getInstance(){
         if (single_instance == null)
             single_instance = new Ewoks();
         return single_instance;
     }
 
-    public void add(Ewok ewok){
-        single_instance.add(ewok);
+    public void setEwokArray(Ewok[] ewokArray){
+        this.ewokArray=ewokArray;
+    }
+
+    public synchronized void acquire(List<Integer> ewoksSerialNumbers){
+        for (Integer i : ewoksSerialNumbers){
+            ewokArray[i].acquire();
+        }
+    }
+
+    public void release(List<Integer> ewoksSerialNumbers){
+        for (Integer i : ewoksSerialNumbers){
+            ewokArray[i].release();
+        }
     }
 
 }

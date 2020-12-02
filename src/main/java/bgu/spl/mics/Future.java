@@ -31,10 +31,6 @@ public class Future<T> {
 	 *
 	 */
 
-	/**
-	 * @PRE: none
-	 * @POST: @POST(isDone)==true
-	 */
 	public synchronized T get() {
 		while (!isDone){
 			try {
