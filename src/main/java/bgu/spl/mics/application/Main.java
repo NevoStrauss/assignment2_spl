@@ -6,6 +6,7 @@ import bgu.spl.mics.application.passiveObjects.Ewok;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 import bgu.spl.mics.application.services.*;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -56,8 +57,9 @@ public class Main {
 			}catch (InterruptedException e){}
 		}
 		System.out.println(gson.toJson(Diary.getInstance()));
+		Gson gson1 = new GsonBuilder().create();
 		try {
-			gson.toJson(Diary.getInstance(), new FileWriter("./output.json"));
+			gson1.toJson(Diary.getInstance(), new FileWriter("./output.json"));
 		}catch (IOException e){}
 	}
 
