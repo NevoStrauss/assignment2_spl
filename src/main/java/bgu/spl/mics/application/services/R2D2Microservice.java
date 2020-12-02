@@ -30,6 +30,7 @@ public class R2D2Microservice extends MicroService {
             }catch (InterruptedException e){}
             complete(deactivationEvent,true);
             Diary.getInstance().setR2D2Deactivate(System.currentTimeMillis());
+            System.out.println("R2D2 finished deactivating");
             sendEvent(new BombDestroyerEvent());
         });
         subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->

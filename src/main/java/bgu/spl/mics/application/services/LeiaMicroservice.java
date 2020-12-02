@@ -33,16 +33,19 @@ public class LeiaMicroservice extends MicroService {
             if (counter == 2) {
                 HashMap<Integer, Future<Boolean>> futureMap = new HashMap<>();
                 int i = 0;
+                System.out.println("Leia starts sending attacks");
                 for (Attack attack : attacks) {
                     Future<Boolean> f = sendEvent(new AttackEvent(attack));
                     futureMap.put(i, f);
                     i++;
                 }
+                System.out.println("Leia finishes sending attacks");
                 sendBroadcast(new NoMoreAttacksBroadcast());
                 for (int j = 0; j < i; j++) {
                     Boolean result = futureMap.get(j).get();
                     futureMap.remove(j);
                 }
+                System.out.println("Leia finished checking Future Objects");
                 Future<Boolean> f = sendEvent(new DeactivationEvent());
             }
         };
@@ -52,6 +55,7 @@ public class LeiaMicroservice extends MicroService {
             Diary d = Diary.getInstance();
             terminate();
             d.setLeiaTerminate(System.currentTimeMillis());
+            System.out.println("Leia terminates");
         });
     }
 
