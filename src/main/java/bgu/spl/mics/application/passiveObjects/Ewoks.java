@@ -16,9 +16,11 @@ public class Ewoks {
 
     private static Ewoks single_instance=null;
     private Ewok[] ewokArray;
+    private boolean[] ewokAvailableArray;
 
     private Ewoks(){
         this.ewokArray=new Ewok[0];
+        this.ewokAvailableArray=new boolean[0];
     }
 
     public static Ewoks getInstance(){
@@ -29,6 +31,7 @@ public class Ewoks {
 
     public void setEwokArray(Ewok[] ewokArray){
         this.ewokArray=ewokArray;
+        this.ewokAvailableArray=new boolean[ewokArray.length];
     }
 
     public synchronized void acquire(List<Integer> ewoksSerialNumbers){
