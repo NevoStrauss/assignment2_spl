@@ -28,6 +28,7 @@ public class AttackingMicroService extends MicroService {
             List<Integer> ewokSerialNumbers = attackEvent.getAttack().getSerials();
             Ewoks ewoks = Ewoks.getInstance();
             ewoks.acquire(ewokSerialNumbers);
+            System.out.println(getName()+" starts attakcking with "+ewokSerialNumbers.toString());
             try {
                 Thread.sleep(attackEvent.getAttack().getDuration());
             } catch (InterruptedException ignored) {}

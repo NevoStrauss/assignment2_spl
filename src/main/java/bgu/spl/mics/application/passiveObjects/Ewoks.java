@@ -2,6 +2,8 @@ package bgu.spl.mics.application.passiveObjects;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Passive object representing the resource manager.
@@ -16,11 +18,9 @@ public class Ewoks {
 
     private static Ewoks single_instance=null;
     private Ewok[] ewokArray;
-    private boolean[] ewokAvailableArray;
 
     private Ewoks(){
         this.ewokArray=new Ewok[0];
-        this.ewokAvailableArray=new boolean[0];
     }
 
     public static Ewoks getInstance(){
@@ -31,7 +31,6 @@ public class Ewoks {
 
     public void setEwokArray(Ewok[] ewokArray){
         this.ewokArray=ewokArray;
-        this.ewokAvailableArray=new boolean[ewokArray.length];
     }
 
     public synchronized void acquire(List<Integer> ewoksSerialNumbers){
