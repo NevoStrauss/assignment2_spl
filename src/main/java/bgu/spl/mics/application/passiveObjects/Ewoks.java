@@ -33,16 +33,25 @@ public class Ewoks {
         this.ewokArray=ewokArray;
     }
 
-    public synchronized void acquire(List<Integer> ewoksSerialNumbers){
-        for (Integer i : ewoksSerialNumbers){
-            ewokArray[i].acquire();
+    public void acquire(List<Integer> ewoksSerialNumbers){
+        for (Integer i : ewoksSerialNumbers) {
+            synchronized (ewokArray[i]){
+                while (!ewokArray[i].isAvailable()){
+                    try {
+                        ewokArray[i].wait();
+                    }catch (InterruptedException ignored){}
+                }
+                ewokArray[i].acquire();
+            }
         }
     }
 
     public void release(List<Integer> ewoksSerialNumbers){
         for (Integer i : ewoksSerialNumbers){
-            ewokArray[i].release();
+            synchronized (ewokArray[i]) {
+                ewokArray[i].release();
+                ewokArray[i].notifyAll();
+            }
         }
     }
-
 }

@@ -6,7 +6,6 @@ import bgu.spl.mics.application.passiveObjects.Ewok;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 import bgu.spl.mics.application.services.*;
 import com.google.gson.Gson;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
@@ -55,7 +54,6 @@ public class Main {
 				threads[i].join();
 			}catch (InterruptedException ignored){}
 		}
-		System.out.println(gson.toJson(Diary.getInstance()));
 
 		try (FileWriter writer = new FileWriter("./output.json")) {
 			gson.toJson(Diary.getInstance(), writer);

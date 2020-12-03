@@ -7,6 +7,8 @@ import bgu.spl.mics.application.messages.NoMoreAttacksBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class AttackingMicroService extends MicroService {
@@ -26,9 +28,12 @@ public class AttackingMicroService extends MicroService {
         subscribeEvent(AttackEvent.class, (AttackEvent attackEvent)->
         {
             List<Integer> ewokSerialNumbers = attackEvent.getAttack().getSerials();
+            System.out.println(ewokSerialNumbers);
+            Collections.sort(ewokSerialNumbers);
+            System.out.println(ewokSerialNumbers);
             Ewoks ewoks = Ewoks.getInstance();
             ewoks.acquire(ewokSerialNumbers);
-            System.out.println(getName()+" starts attakcking with "+ewokSerialNumbers.toString());
+            System.out.println(getName()+" starts attacking with "+ewokSerialNumbers.toString());
             try {
                 Thread.sleep(attackEvent.getAttack().getDuration());
             } catch (InterruptedException ignored) {}

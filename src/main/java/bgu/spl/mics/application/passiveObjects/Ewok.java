@@ -18,22 +18,15 @@ public class Ewok {
     /**
      * Acquires an Ewok
      */
-    public synchronized void acquire() {
-		while (!available)
-		    try{
-		        wait();
-            }catch (InterruptedException e){}
+    public  void acquire() {
 		available=false;
     }
 
     /**
      * release an Ewok
      */
-    public synchronized void release() {
-    	if(!available){
-    	    available=true;
-    	    notifyAll();
-        }
+    public void release() {
+        available=true;
     }
 
     public synchronized boolean isAvailable(){
