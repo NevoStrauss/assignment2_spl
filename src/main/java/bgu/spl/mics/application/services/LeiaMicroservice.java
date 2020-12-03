@@ -32,16 +32,14 @@ public class LeiaMicroservice extends MicroService {
             counter++;
             if (counter == 2) {
                 HashMap<Integer, Future<Boolean>> futureMap = new HashMap<>();
-                int i = 0;
                 System.out.println("Leia starts sending attacks");
-                for (Attack attack : attacks) {
-                    Future<Boolean> f = sendEvent(new AttackEvent(attack));
+                for (int i=0; i<attacks.length;i++) {
+                    Future<Boolean> f = sendEvent(new AttackEvent(attacks[i]));
                     futureMap.put(i, f);
-                    i++;
                 }
                 System.out.println("Leia finishes sending attacks");
                 sendBroadcast(new NoMoreAttacksBroadcast());
-                for (int j = 0; j < i; j++) {
+                for (int j = 0; j < attacks.length; j++) {
                     Boolean result = futureMap.get(j).get();
                     futureMap.remove(j);
                 }

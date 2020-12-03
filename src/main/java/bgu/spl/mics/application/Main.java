@@ -55,7 +55,7 @@ public class Main {
 			}catch (InterruptedException ignored){}
 		}
 
-		try (FileWriter writer = new FileWriter("./output.json")) {
+		try (FileWriter writer = new FileWriter(args[1])) {
 			gson.toJson(Diary.getInstance(), writer);
 		} catch (IOException e) {
 			e.printStackTrace();
