@@ -1,12 +1,8 @@
 package bgu.spl.mics.application.services;
 
-import bgu.spl.mics.Callback;
-import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
-import bgu.spl.mics.application.messages.FinishedSubscribedBroadcast;
 import bgu.spl.mics.application.messages.NoMoreAttacksBroadcast;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
-import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
 
 
@@ -30,7 +26,6 @@ public class C3POMicroservice extends AttackingMicroService {
         subscribeBroadcast(NoMoreAttacksBroadcast.class,(NoMoreAttacksBroadcast noMoreAttacksBroadcast)->
         {Diary.getInstance().setC3POFinish(System.currentTimeMillis());
             System.out.println(getName()+" finished attacking at "+System.currentTimeMillis());});
-        sendBroadcast(new FinishedSubscribedBroadcast());
         subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
         {
             terminate();

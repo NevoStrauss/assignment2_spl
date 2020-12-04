@@ -17,37 +17,14 @@ import bgu.spl.mics.application.passiveObjects.Diary;
  */
 public class LeiaMicroservice extends MicroService {
 	private Attack[] attacks;
-	private int counter;
-	
+
     public LeiaMicroservice(Attack[] attacks) {
         super("Leia");
 		this.attacks = attacks;
-		counter = 0;
     }
 
     @Override
     protected void initialize() {
-        Callback<FinishedSubscribedBroadcast> callback1 = (FinishedSubscribedBroadcast fs) ->
-        {
-            counter++;
-            if (counter == 2) {
-                HashMap<Integer, Future<Boolean>> futureMap = new HashMap<>();
-                System.out.println("Leia starts sending attacks");
-                for (int i=0; i<attacks.length;i++) {
-                    Future<Boolean> f = sendEvent(new AttackEvent(attacks[i]));
-                    futureMap.put(i, f);
-                }
-                System.out.println("Leia finishes sending attacks");
-                sendBroadcast(new NoMoreAttacksBroadcast());
-                for (int j = 0; j < attacks.length; j++) {
-                    Boolean result = futureMap.get(j).get();
-                    futureMap.remove(j);
-                }
-                System.out.println("Leia finished checking Future Objects");
-                Future<Boolean> f = sendEvent(new DeactivationEvent());
-            }
-        };
-            subscribeBroadcast(FinishedSubscribedBroadcast.class, callback1);
         subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
         {
             Diary d = Diary.getInstance();
@@ -55,6 +32,24 @@ public class LeiaMicroservice extends MicroService {
             d.setLeiaTerminate(System.currentTimeMillis());
             System.out.println("Leia terminates");
         });
+        try {
+            Thread.sleep(100);
+        }catch(InterruptedException ignored){}
+
+        HashMap<Integer, Future<Boolean>> futureMap = new HashMap<>();
+        System.out.println("Leia starts sending attacks");
+        for (int i=0; i<attacks.length;i++) {
+            Future<Boolean> f = sendEvent(new AttackEvent(attacks[i]));
+            futureMap.put(i, f);
+        }
+        System.out.println("Leia finishes sending attacks");
+        sendBroadcast(new NoMoreAttacksBroadcast());
+        for (int j = 0; j < attacks.length; j++) {
+            Boolean result = futureMap.get(j).get();
+            futureMap.remove(j);
+        }
+        System.out.println("Leia finished checking Future Objects");
+        Future<Boolean> f = sendEvent(new DeactivationEvent());
     }
 
     public int getTotalAttack(){

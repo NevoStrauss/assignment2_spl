@@ -15,11 +15,11 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class MessageBusImpl implements MessageBus {
 
 	//fields
-	private ConcurrentHashMap<String, Queue<Message>> queueMap;
+	private ConcurrentHashMap<MicroService, Queue<Message>> queueMap;
 	private ConcurrentHashMap<Class<? extends Event>, Queue<MicroService>> eventMap;
 	private ConcurrentHashMap<Class<? extends Broadcast>,List<MicroService>> broadcastMap;
 	private ConcurrentHashMap<Event,Future> futureMap;
-	private ConcurrentHashMap<String,List<Class<? extends Message>>> subscribeMap;
+	private ConcurrentHashMap<MicroService,List<Class<? extends Message>>> subscribeMap;
 	private static MessageBusImpl single_instance = null;
 
 	//CTR
@@ -55,7 +55,7 @@ public class MessageBusImpl implements MessageBus {
 		synchronized (eventMap.get(type)){
 			if (!eventMap.get(type).contains(m)) {
 				eventMap.get(type).add(m);
-				subscribeMap.get(m.getName()).add(type);
+				subscribeMap.get(m).add(type);
 			}
 			eventMap.get(type).notifyAll();
 		}
@@ -94,9 +94,9 @@ public class MessageBusImpl implements MessageBus {
 		}
 		synchronized (broadcastMap.get(b.getClass())){
 			for (MicroService m : broadcastMap.get(b.getClass())) {
-				synchronized (queueMap.get(m.getName())) {
-					queueMap.get(m.getName()).offer(b);
-					queueMap.get(m.getName()).notifyAll();
+				synchronized (queueMap.get(m)) {
+					queueMap.get(m).offer(b);
+					queueMap.get(m).notifyAll();
 				}
 			}
 		}
@@ -116,9 +116,9 @@ public class MessageBusImpl implements MessageBus {
 		synchronized (eventMap.get(e.getClass())){
 			MicroService m = eventMap.get(e.getClass()).poll();
 			assert m != null;
-			synchronized (queueMap.get(m.getName())) {
-				queueMap.get(m.getName()).offer(e);
-				queueMap.get(m.getName()).notifyAll();
+			synchronized (queueMap.get(m)) {
+				queueMap.get(m).offer(e);
+				queueMap.get(m).notifyAll();
 			}
 			eventMap.get(e.getClass()).offer(m);
 		}
@@ -130,26 +130,26 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public void register(MicroService m) {
 		if (!isRegistered(m)) {
-			queueMap.put(m.getName(), new LinkedList<>());
-			subscribeMap.put(m.getName(),new LinkedList<>());
+			queueMap.put(m, new LinkedList<>());
+			subscribeMap.put(m,new LinkedList<>());
 		}
 	}
 
 	@Override
 	public void unregister(MicroService m) {
 		if (isRegistered(m)){
-			synchronized (subscribeMap.get(m.getName())) {
-				for (Class c : subscribeMap.get(m.getName())) {
+			synchronized (subscribeMap.get(m)) {
+				for (Class<? extends Message> c : subscribeMap.get(m)) {
 					unsubscribeEventOrBroadcast(c, m);
 				}
 			}
-			subscribeMap.remove(m.getName());
-			queueMap.remove(m.getName());
+			subscribeMap.remove(m);
+			queueMap.remove(m);
 		}
 	}
 
 	private boolean isRegistered(MicroService m){
-		return queueMap.containsKey(m.getName());
+		return queueMap.containsKey(m);
 	}
 
 
@@ -157,7 +157,7 @@ public class MessageBusImpl implements MessageBus {
 		if (eventMap.containsKey(c)){
 			eventMap.get(c).remove(m);
 		}
-		else if (broadcastMap.containsKey(c)){
+		if (broadcastMap.containsKey(c)){
 			broadcastMap.get(c).remove(m);
 		}
 	}
@@ -166,13 +166,16 @@ public class MessageBusImpl implements MessageBus {
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 		if (!isRegistered(m))
 			throw new InterruptedException(m.getName()+" hasn't been registered to the message bus");
-		synchronized (queueMap.get(m.getName())) {
-			while (queueMap.get(m.getName()).isEmpty()) {
+		synchronized (queueMap.get(m)) {
+			while (queueMap.get(m).isEmpty()) {
 				try {
-					queueMap.get(m.getName()).wait();
+					queueMap.get(m).wait();
 				}catch(InterruptedException e){}
 			}
 		}
-		return queueMap.get(m.getName()).poll();
+		return queueMap.get(m).poll();
+	}
+	public void clean(){
+		single_instance=null;
 	}
 }
