@@ -1,6 +1,5 @@
 package bgu.spl.mics.application;
 
-import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewok;
@@ -55,7 +54,6 @@ public class Main {
 				threads[i].join();
 			}catch (InterruptedException ignored){}
 		}
-
 		try (FileWriter writer = new FileWriter(args[1])) {
 			gson.toJson(Diary.getInstance(), writer);
 		} catch (IOException e) {

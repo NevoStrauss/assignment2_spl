@@ -24,7 +24,7 @@ public class C3POMicroservice extends AttackingMicroService {
     protected void initialize() {
         super.initialize();
         subscribeBroadcast(NoMoreAttacksBroadcast.class,(NoMoreAttacksBroadcast noMoreAttacksBroadcast)->
-        {Diary.getInstance().setC3POFinish(System.currentTimeMillis());
+        {Diary.getInstance().setC3POFinish(finishAttack);
             System.out.println(getName()+" finished attacking at "+System.currentTimeMillis());});
         subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
         {

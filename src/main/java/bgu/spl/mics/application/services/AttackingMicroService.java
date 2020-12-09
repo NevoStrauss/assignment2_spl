@@ -9,12 +9,14 @@ import java.util.Collections;
 import java.util.List;
 
 public class AttackingMicroService extends MicroService {
+    protected long finishAttack;
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
      *             does not have to be unique)
      */
     public AttackingMicroService(String name) {
         super(name);
+        finishAttack=0;
     }
 
     /**
@@ -35,6 +37,7 @@ public class AttackingMicroService extends MicroService {
                 Thread.sleep(attackEvent.getAttack().getDuration());
             } catch (InterruptedException ignored) {}
             complete(attackEvent,true);
+            finishAttack = System.currentTimeMillis();
             System.out.println(getName()+" finished attack with Ewoks: "+ewokSerialNumbers.toString());
             ewoks.release(ewokSerialNumbers);
             Diary.getInstance().addAttack();

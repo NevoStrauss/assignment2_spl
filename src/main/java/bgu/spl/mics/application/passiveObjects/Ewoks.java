@@ -16,17 +16,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Ewoks {
 
-    private static Ewoks single_instance=null;
+    private static class single_instance{
+        private static final Ewoks single_instance = new Ewoks();
+    }
     private Ewok[] ewokArray;
-
     private Ewoks(){
         this.ewokArray=new Ewok[0];
     }
 
     public static Ewoks getInstance(){
-        if (single_instance == null)
-            single_instance = new Ewoks();
-        return single_instance;
+        return single_instance.single_instance;
     }
 
     public void setEwokArray(Ewok[] ewokArray){
@@ -35,23 +34,13 @@ public class Ewoks {
 
     public void acquire(List<Integer> ewoksSerialNumbers){
         for (Integer i : ewoksSerialNumbers) {
-            synchronized (ewokArray[i]){
-                while (!ewokArray[i].isAvailable()){
-                    try {
-                        ewokArray[i].wait();
-                    }catch (InterruptedException ignored){}
-                }
-                ewokArray[i].acquire();
-            }
+            ewokArray[i].acquire();
         }
     }
 
     public void release(List<Integer> ewoksSerialNumbers){
         for (Integer i : ewoksSerialNumbers){
-            synchronized (ewokArray[i]) {
-                ewokArray[i].release();
-                ewokArray[i].notifyAll();
-            }
+            ewokArray[i].release();
         }
     }
 }

@@ -26,7 +26,7 @@ public class HanSoloMicroservice extends AttackingMicroService {
     protected void initialize() {
         super.initialize();
         subscribeBroadcast(NoMoreAttacksBroadcast.class,(NoMoreAttacksBroadcast noMoreAttacksBroadcast)->
-        {Diary.getInstance().setHanSoloFinish(System.currentTimeMillis());
+        {Diary.getInstance().setHanSoloFinish(finishAttack);
             System.out.println(getName()+" finished attacking at " + System.currentTimeMillis());});
         subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
             {
