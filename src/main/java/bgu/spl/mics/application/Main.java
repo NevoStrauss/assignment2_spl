@@ -1,5 +1,6 @@
 package bgu.spl.mics.application;
 
+import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewok;
@@ -60,5 +61,6 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println(gson.toJson(Diary.getInstance()));
 	}
 }

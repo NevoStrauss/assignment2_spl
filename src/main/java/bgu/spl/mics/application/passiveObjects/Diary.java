@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Do not add to this class nothing but a single constructor, getters and setters.
  */
 public class Diary {
-    private final AtomicInteger totalAttacks;
+    private  AtomicInteger totalAttacks;
     private long HanSoloFinish;
     private long C3POFinish;
     private long R2D2Deactivate;
@@ -101,5 +101,9 @@ public class Diary {
 
     public void addAttack(){
         totalAttacks.addAndGet(1);
+    }
+
+    public void resetTotalAttacks(){
+        totalAttacks=new AtomicInteger(0);
     }
 }

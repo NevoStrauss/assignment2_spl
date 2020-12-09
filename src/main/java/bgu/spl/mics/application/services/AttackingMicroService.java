@@ -2,13 +2,10 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
-import bgu.spl.mics.application.messages.FinishedSubscribedBroadcast;
-import bgu.spl.mics.application.messages.NoMoreAttacksBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class AttackingMicroService extends MicroService {

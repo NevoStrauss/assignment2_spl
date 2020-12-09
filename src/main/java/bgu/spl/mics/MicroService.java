@@ -23,7 +23,7 @@ import java.util.HashMap;
 public abstract class MicroService implements Runnable {
     private String name;
     private MessageBus messageBus;
-    private HashMap<Class,Callback> callbackHashMap;
+    private HashMap<Class<? extends Message>,Callback> callbackHashMap;
     private boolean isDone;
 
     /**
@@ -142,7 +142,6 @@ public abstract class MicroService implements Runnable {
      * message.
      */
     protected final void terminate() {
-        messageBus.unregister(this);
         isDone = true;
     }
 
@@ -160,17 +159,19 @@ public abstract class MicroService implements Runnable {
      */
     @Override
     public final void run() {
+        messageBus.register(this);
     	initialize();
     	Message message=null;
     	while(!isDone) {
             try {
                 message = messageBus.awaitMessage(this);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException ignored) {}
             if (message != null) {
                 System.out.println(getName() + " recived message: " +message.getClass());
                 callbackHashMap.get(message.getClass()).call(message);
             }
         }
+        messageBus.unregister(this);
     }
 
 }
