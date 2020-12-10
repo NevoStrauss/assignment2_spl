@@ -16,26 +16,34 @@ import bgu.spl.mics.application.passiveObjects.Diary;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class R2D2Microservice extends MicroService {
+    /**
+     * @param duration: how much time it takes to deactivate the shield
+     */
     long duration;
 
     public R2D2Microservice(long duration) {
         super("R2D2");
         this.duration=duration;
     }
-    @Override
+
+    /**
+     * Initialize the R2D2 micro service:
+     * subscribes to:
+     *          Events: Deactivation Event
+     *          Broadcasts: Terminate Broadcast
+     */
     protected void initialize() {
         subscribeEvent(DeactivationEvent.class,(DeactivationEvent deactivationEvent)->{
             try{
-                Thread.sleep(duration);
+                Thread.sleep(duration);     //first sleeps to deactivate the shield
             }catch (InterruptedException e){}
-            complete(deactivationEvent,true);
-            Diary.getInstance().setR2D2Deactivate(System.currentTimeMillis());
-            System.out.println("R2D2 finished deactivating");
+            complete(deactivationEvent,true);       //completes the event that triggered this callback
+            Diary.getInstance().setR2D2Deactivate(System.currentTimeMillis());      //update the diary after he finished
         });
         subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
         {
-            terminate();
-            Diary.getInstance().setR2D2Terminate(System.currentTimeMillis());
+            terminate();        //sends to @MicroService terminate()
+            Diary.getInstance().setR2D2Terminate(System.currentTimeMillis()); //update diary
         });
     }
 }

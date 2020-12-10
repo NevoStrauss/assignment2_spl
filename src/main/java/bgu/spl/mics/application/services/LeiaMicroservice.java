@@ -23,7 +23,15 @@ public class LeiaMicroservice extends MicroService {
 		this.attacks = attacks;
     }
 
-    @Override
+    /**
+     * Initialize the Leia micro service:
+     * subscribes to:
+     *          Events: none
+     *          Broadcasts: Terminate Broadcast
+     *
+     * sends Events:
+     *
+     */
     protected void initialize() {
         subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
         {
