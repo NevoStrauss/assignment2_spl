@@ -15,14 +15,14 @@ import bgu.spl.mics.application.passiveObjects.Diary;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class C3POMicroservice extends AttackingMicroService {
-	
+
     public C3POMicroservice() {
         super("C3PO");
     }
 
     @Override
     protected void initialize() {
-        super.initialize();
+        subscribeToAttackEvent();
         subscribeBroadcast(NoMoreAttacksBroadcast.class,(NoMoreAttacksBroadcast noMoreAttacksBroadcast)->
         {Diary.getInstance().setC3POFinish(finishAttack);
             System.out.println(getName()+" finished attacking at "+System.currentTimeMillis());});

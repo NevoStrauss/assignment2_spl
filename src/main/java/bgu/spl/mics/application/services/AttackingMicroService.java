@@ -8,7 +8,7 @@ import bgu.spl.mics.application.passiveObjects.Ewoks;
 import java.util.Collections;
 import java.util.List;
 
-public class AttackingMicroService extends MicroService {
+public abstract class AttackingMicroService extends MicroService {
     protected long finishAttack;
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
@@ -23,7 +23,9 @@ public class AttackingMicroService extends MicroService {
      * this method is called once when the event loop starts.
      */
     @Override
-    protected void initialize(){
+    protected abstract void initialize();
+
+    protected void subscribeToAttackEvent(){
         subscribeEvent(AttackEvent.class, (AttackEvent attackEvent)->
         {
             List<Integer> ewokSerialNumbers = attackEvent.getAttack().getSerials();
