@@ -11,19 +11,36 @@ import java.util.concurrent.ConcurrentHashMap;
  * Only private fields and methods can be added to this class.
  */
 
+/**
+ * This class is responsible of getting and delivering messages (Events and Broadcasts)
+ * between MicroServices.
+ * Note that this class is implemented as a singleton.
+ */
 public class MessageBusImpl implements MessageBus {
 	private static class single_instance{
 		private static final MessageBusImpl single_instance = new MessageBusImpl();
 	}
-	//fields
+	//Stores a queue for each MicroService, to organize its missions.
+	//Also responsible of the Round Robbin separation of the events.
 	private final ConcurrentHashMap<MicroService, Queue<Message>> queueMap;
+
+	//Stores all the MicroServices that subscribed to each Event
 	private final ConcurrentHashMap<Class<? extends Event>, Queue<MicroService>> eventMap;
+
+	//Stores all the MicroServices that subscribed to each Broadcast
 	private final ConcurrentHashMap<Class<? extends Broadcast>,List<MicroService>> broadcastMap;
+
+	//Stores the Future Objects for each Event that have been sent.
 	private final ConcurrentHashMap<Event,Future> futureMap;
+
+	//Stores the Messages which each MicroServices is subscribed to.
 	private final ConcurrentHashMap<MicroService,List<Class<? extends Message>>> subscribeMap;
 
 
-	//CTR
+	/**
+	 * CTR
+	 * Initializing all the field with a concurrentHashMap.
+	 */
 	private MessageBusImpl(){
 		queueMap = new ConcurrentHashMap<>();
 		eventMap = new ConcurrentHashMap<>();
@@ -32,16 +49,19 @@ public class MessageBusImpl implements MessageBus {
 		subscribeMap = new ConcurrentHashMap<>();
 	}
 
-	//methods
+	/**
+	 *
+	 * @return the only instance of the messageBus
+	 */
 	public static MessageBusImpl getInstance() {
 		return single_instance.single_instance;
 	}
 
 	/**
-	 * if {@code m} is already subscribed to {@code type}, do nothing
+	 * if {@code m} is already subscribed to {@code type}, do nothing.
 	 * @param type The type to subscribe to,
 	 * @param m    The subscribing micro-service.
-	 * @param <T>
+	 * @param <T> The type of the result of the event which extended by the class.
 	 */
 
 	@Override
@@ -64,6 +84,11 @@ public class MessageBusImpl implements MessageBus {
 		}
 	}
 
+	/**
+	 *
+	 * @param type 	The type to subscribe to.
+	 * @param m    	The subscribing micro-service.
+	 */
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
 		if (!broadcastMap.containsKey(type)) {
