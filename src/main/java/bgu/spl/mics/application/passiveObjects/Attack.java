@@ -21,10 +21,18 @@ public class Attack {
         this.duration = duration;
     }
 
+    /**
+     *
+     * @return the duration of the current attack.
+     */
     public int getDuration() {
         return duration;
     }
 
+    /**
+     *
+     * @return the list of the ewoks serial numbers.
+     */
     public List<Integer> getSerials() {
         return serials;
     }

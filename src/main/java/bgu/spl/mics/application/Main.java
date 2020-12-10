@@ -27,7 +27,7 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		MicroService[] microServices = new MicroService[5];
+		MicroService[] microServices = new MicroService[5];	//init an array for the Microservices
 
 		microServices[0] = new LeiaMicroservice(operationData.getAttacks());
 		microServices[1] = new HanSoloMicroservice();
@@ -36,19 +36,24 @@ public class Main {
 		microServices[4] = new LandoMicroservice(operationData.getLando());
 
 		int ewok = operationData.getEwoks();
-		Ewok[] ewoksArray = new Ewok[ewok+1];
+		Ewok[] ewoksArray = new Ewok[ewok+1];	//create an Ewoks Array for the Ewoks class
 		for (int i=1;i<=ewok;i++){
 			ewoksArray[i] = new Ewok(i);
 		}
 		Ewoks.getInstance().setEwokArray(ewoksArray);
 		Thread[] threads = new Thread[microServices.length];
+
+		//create all the Threads
 		for(int i =0 ; i<threads.length;i++){
 			threads[i] = new Thread(microServices[i]);
-			System.out.println(microServices[i].getName()+" is "+threads[i].getName());
 		}
+
+		//run all the Threads
 		for (int i = 0 ; i < threads.length; i++){
 			threads[i].start();
 		}
+
+		//wait for all the Threads to join
 		for (int i = 0 ; i < threads.length; i++){
 			try {
 				threads[i].join();
@@ -59,6 +64,5 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println(gson.toJson(Diary.getInstance()));
 	}
 }

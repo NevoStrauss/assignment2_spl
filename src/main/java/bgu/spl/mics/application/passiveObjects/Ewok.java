@@ -8,15 +8,28 @@ import java.util.concurrent.Semaphore;
  * <p>
  * You may add fields and methods to this class as you see fit (including public methods).
  */
+
+/**
+ * This class is implemented using a Semaphore,
+ * to restrict the obtaining of the ewoks by the Threads.
+ * each thread must acquire a permit from the semaphore,
+ * guaranteeing that the ewok is available for use.
+ */
+
 public class Ewok {
     private final int serialNumber;
-	private boolean available;
-	private final Semaphore ewokLocker;
+    private boolean available;
+    private final Semaphore ewokLocker;
 
-	public Ewok(int serialNumber){
-	    this.serialNumber=serialNumber;
-	    available=true;
-	    ewokLocker = new Semaphore(1, false);
+    /**
+     * CTR
+     * initializing this ewok's seril number, available for true (until acquired),
+     * and the Semaphore to unfair and with 1 Thread permit.
+     */
+    public Ewok(int serialNumber){
+        this.serialNumber=serialNumber;
+        available=true;
+        ewokLocker = new Semaphore(1, false);
     }
 
     /**
@@ -26,7 +39,7 @@ public class Ewok {
         try {
             ewokLocker.acquire();
         } catch (InterruptedException ignored){}
-		available=false;
+        available=false;
     }
 
     /**
@@ -37,10 +50,18 @@ public class Ewok {
         ewokLocker.release();
     }
 
+    /**
+     *
+     * @return if this ewok can be acquired.
+     */
     public synchronized boolean isAvailable(){
         return available;
     }
 
+    /**
+     *
+     * @return this ewok serial number.
+     */
     public int getSerialNumber(){
         return serialNumber;
     }
