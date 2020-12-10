@@ -126,7 +126,7 @@ public abstract class MicroService implements Runnable {
      *               {@code e}.
      * @param e      The event to complete.
      * @param result The result to resolve the relevant Future object.
-     *               {@code e}.
+     *
      */
     protected final <T> void complete(Event<T> e, T result) {
     	messageBus.complete(e,result);

@@ -58,8 +58,8 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	/**
-	 * if {@code m} is already subscribed to {@code type}, do nothing.
-	 * @param type The type to subscribe to,
+	 * If {@code m} is already subscribed to {@code type}, do nothing.
+	 * @param type The type of Event to subscribe to,
 	 * @param m    The subscribing micro-service.
 	 * @param <T> The type of the result of the event which extended by the class.
 	 */
@@ -85,8 +85,8 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	/**
-	 *
-	 * @param type 	The type to subscribe to.
+	 * If {@code m} is already subscribed to {@code type}, do nothing.
+	 * @param type 	The type of Broadcast to subscribe to.
 	 * @param m    	The subscribing micro-service.
 	 */
 	@Override
@@ -110,12 +110,24 @@ public class MessageBusImpl implements MessageBus {
 		}
 	}
 
+	/**
+	 * Completes the received request {@code e} with the result {@code result}.
+	 * Removes the Event {@code e} from the Future data structure.
+	 * @param e      The Event to complete.
+	 * @param result The resolved result of the completed event (our case->tru/false).
+	 * @param <T>    The type of the expected result of the processed event.
+	 */
 	@Override @SuppressWarnings({"unchecked"})
 	public <T> void complete(Event<T> e, T result) {
 		futureMap.get(e).resolve(result);
 		futureMap.remove(e);
 	}
 
+	/**
+	 * If there are none MicroServices subscribed to {@code b} , wait.
+	 * Sends Broadcast {@code b} to all of the MicroServices which subscribed to this type of Broadcast
+	 * @param b 	The Broadcast (message) to add to the queues of the MicroServices.
+	 */
 	@Override
 	public void sendBroadcast(Broadcast b) {
 		long startTime = System.currentTimeMillis();
@@ -145,7 +157,13 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 
-
+	/**
+	 * If there are none MicroServices subscribed to {@code e} , wait.
+	 * @param e     	The event to add to the queue of the next MicroServices which subscribes
+	 *                  to {@code e} Event- by Round Robbin manner.
+	 * @param <T>       The type of the result of the Future that returned after completing the event.
+	 * @return			{@param f} The future Object derived from the Event {@code e}.
+	 */
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
 		long startTime = System.currentTimeMillis();
@@ -175,6 +193,11 @@ public class MessageBusImpl implements MessageBus {
 		return f;
 	}
 
+	/**
+	 * If {@code m} already registered, do nothing.
+	 * @param m the micro-service to add to the Microservices data structure,
+	 *          and to create a queue for.
+	 */
 	@Override
 	public void register(MicroService m) {
 		if (!isRegistered(m)) {
@@ -183,6 +206,11 @@ public class MessageBusImpl implements MessageBus {
 		}
 	}
 
+	/**
+	 * If {@code m} is not register, do nothing.
+	 * Remove {@code m} from all the data structures it has been inserted in.
+ 	 * @param m the micro-service to unregister.
+	 */
 	@Override
 	public void unregister(MicroService m) {
 		if (isRegistered(m)){
@@ -196,6 +224,11 @@ public class MessageBusImpl implements MessageBus {
 		}
 	}
 
+	/**
+	 *
+	 * @param m The MicroServices to check if registered.
+	 * @return if {@code m} is registered.
+	 */
 	private boolean isRegistered(MicroService m){
 		return queueMap.containsKey(m);
 	}
@@ -234,8 +267,7 @@ public class MessageBusImpl implements MessageBus {
 				while (queueMap.get(m).isEmpty()) {
 					try {
 						queueMap.get(m).wait();
-					} catch (InterruptedException e) {
-					}
+					} catch (InterruptedException e) {}
 				}
 			}
 		}
