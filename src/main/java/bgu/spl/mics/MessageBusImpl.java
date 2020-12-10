@@ -47,11 +47,11 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
 		if (!eventMap.containsKey(type)) {
-			synchronized (eventMap) {			//can change to putIfAbsent
+			synchronized (eventMap) {
 				if (!eventMap.containsKey(type))
 					eventMap.put(type, new LinkedList<>());
+				eventMap.notifyAll();
 			}
-			eventMap.putIfAbsent(type,new LinkedList<>());
 		}
 		if (!eventMap.get(type).contains(m)) {
 			synchronized (eventMap.get(type)) {
@@ -99,9 +99,9 @@ public class MessageBusImpl implements MessageBus {
 			synchronized (broadcastMap) {
 				while (!broadcastMap.containsKey(b.getClass())) {
 					try {
-						broadcastMap.wait(50);
 						if (System.currentTimeMillis()-startTime>500)
 							toContinue = false;
+						broadcastMap.wait(50);
 					} catch (InterruptedException ignored) {
 					}
 				}
@@ -128,9 +128,9 @@ public class MessageBusImpl implements MessageBus {
 			synchronized (eventMap) {
 				while (!eventMap.containsKey(e.getClass())) {
 					try {
-						eventMap.wait(50);
 						if (System.currentTimeMillis() - startTime > 500)
 							return null;
+						eventMap.wait(50);
 					} catch (InterruptedException ignored) {
 					}
 				}

@@ -22,18 +22,20 @@ public class HanSoloMicroservice extends AttackingMicroService {
     }
 
 
-    @Override
+    /**
+     * Initialize the HanSolo micro service:
+     * subscribes to:
+     *          Events: Attack Event
+     *          Broadcasts: NoMoreAttacks, Terminate Broadcast
+     */
     protected void initialize() {
         subscribeToAttackEvent();
         subscribeBroadcast(NoMoreAttacksBroadcast.class,(NoMoreAttacksBroadcast noMoreAttacksBroadcast)->
-        {Diary.getInstance().setHanSoloFinish(finishAttack);
-            System.out.println(getName()+" finished attacking at " + System.currentTimeMillis());});
+                Diary.getInstance().setHanSoloFinish(finishAttack));    //update the time of the last attack
         subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
             {
                 terminate();
-                Diary.getInstance().setHanSoloTerminate(System.currentTimeMillis());
+                Diary.getInstance().setHanSoloTerminate(System.currentTimeMillis());       //update diary
             });
-        System.out.println("Han Solo finished subscribing");
-
     }
 }

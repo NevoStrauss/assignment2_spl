@@ -19,22 +19,25 @@ public class LandoMicroservice  extends MicroService {
         this.duration=duration;
     }
 
-    @Override
+    /**
+     * Initialize the Lando micro service, he is the bomb destroyer:
+     * subscribes to:
+     *          Events: BombDestroyer Event
+     *          Broadcasts: Terminate Broadcast
+     */
     protected void initialize() {
        subscribeEvent(BombDestroyerEvent.class,(BombDestroyerEvent bombDestroyerEvent)->
        {
            try {
-               Thread.sleep(duration);
+               Thread.sleep(duration);      //sleep to bomb
            }catch (InterruptedException e){}
-           complete(bombDestroyerEvent,true);
-           sendBroadcast(new TerminateBroadcast());
-           System.out.println("Lando finished bombing");
+           complete(bombDestroyerEvent,true);   //complete the event
+           sendBroadcast(new TerminateBroadcast());     //inform everyone that they should terminate
        });
        subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
        {
            terminate();
-           Diary.getInstance().setLandoTerminate(System.currentTimeMillis());
+           Diary.getInstance().setLandoTerminate(System.currentTimeMillis());       //update the diary
        });
-        System.out.println("Lando finished subscribing");
     }
 }

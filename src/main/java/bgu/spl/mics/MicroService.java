@@ -59,7 +59,7 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback) {
-        if (!callbackHashMap.containsKey(type)) {
+        if (!callbackHashMap.containsKey(type)) {   //checks if there is already a callback for the @type
             messageBus.subscribeEvent(type, this);
             callbackHashMap.put(type, callback);
         }
@@ -86,7 +86,7 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback) {
-    	if (!callbackHashMap.containsKey(type)){
+    	if (!callbackHashMap.containsKey(type)){    //checks if there is already a callback for the @type
     	    messageBus.subscribeBroadcast(type,this);
     	    callbackHashMap.put(type,callback);
         }
@@ -159,19 +159,16 @@ public abstract class MicroService implements Runnable {
      */
     @Override
     public final void run() {
-        messageBus.register(this);
-    	initialize();
+        messageBus.register(this);      //first register the microservice to the messageBus
+    	initialize();                       //initialize so it will be subscribed to events and broadcasts
     	Message message=null;
     	while(!isDone) {
             try {
-                message = messageBus.awaitMessage(this);
+                message = messageBus.awaitMessage(this);        //get a message from the messageBus
             } catch (InterruptedException ignored) {}
-            if (message != null) {
-                System.out.println(getName() + " recived message: " +message.getClass());
-                callbackHashMap.get(message.getClass()).call(message);
-            }
+            if (message != null)
+                callbackHashMap.get(message.getClass()).call(message);  //activate the proper callback
         }
-        messageBus.unregister(this);
+        messageBus.unregister(this);    //unregister from the messageBus
     }
-
 }

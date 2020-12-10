@@ -34,7 +34,7 @@ public class Future<T> {
 	public synchronized T get() {
 		while (!isDone){
 			try {
-				wait();
+				wait();	//wait until it is done
 			}
 			catch (InterruptedException e){}
 		}
@@ -50,7 +50,7 @@ public class Future<T> {
 			throw new RuntimeException("Already resolved");
 		this.result=result;
 		isDone=true;
-		notifyAll();
+		notifyAll();	//notify so everyone waiting for the result will continue
 	}
 
 	/**
@@ -78,7 +78,6 @@ public class Future<T> {
 		while (!isDone && System.currentTimeMillis()<endTime) {
 			try {
 				wait(unit.toMillis(timeout));
-
 			} catch (InterruptedException e) {}
 		}
 		return result;

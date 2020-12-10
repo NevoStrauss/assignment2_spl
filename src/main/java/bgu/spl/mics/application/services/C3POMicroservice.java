@@ -20,17 +20,20 @@ public class C3POMicroservice extends AttackingMicroService {
         super("C3PO");
     }
 
-    @Override
+    /**
+     * Initialize the R2D2 micro service:
+     * subscribes to:
+     *          Events: Attack Event
+     *          Broadcasts: NoMoreAttacks, Terminate Broadcast
+     */
     protected void initialize() {
         subscribeToAttackEvent();
         subscribeBroadcast(NoMoreAttacksBroadcast.class,(NoMoreAttacksBroadcast noMoreAttacksBroadcast)->
-        {Diary.getInstance().setC3POFinish(finishAttack);
-            System.out.println(getName()+" finished attacking at "+System.currentTimeMillis());});
+                Diary.getInstance().setC3POFinish(finishAttack));   //update the time of the last attack
         subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
         {
             terminate();
-            Diary.getInstance().setC3POTerminate(System.currentTimeMillis());
+            Diary.getInstance().setC3POTerminate(System.currentTimeMillis());   //update diary when terminating
         });
-        System.out.println("C3PO finished subscribing");
     }
 }

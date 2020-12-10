@@ -8,6 +8,10 @@ import bgu.spl.mics.application.passiveObjects.Ewoks;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * an abstract class for all the attacking micro services. it has a protected method @subscribeToAttackEvent that
+ * all attacking microservices need to have
+ */
 public abstract class AttackingMicroService extends MicroService {
     protected long finishAttack;
     /**
@@ -19,31 +23,25 @@ public abstract class AttackingMicroService extends MicroService {
         finishAttack=0;
     }
 
-    /**
-     * this method is called once when the event loop starts.
-     */
-    @Override
     protected abstract void initialize();
 
+    /**
+     * subscribes to an AttackEvent type
+     */
     protected void subscribeToAttackEvent(){
         subscribeEvent(AttackEvent.class, (AttackEvent attackEvent)->
         {
-            List<Integer> ewokSerialNumbers = attackEvent.getAttack().getSerials();
-            System.out.println(ewokSerialNumbers);
-            Collections.sort(ewokSerialNumbers);
-            System.out.println(ewokSerialNumbers);
+            List<Integer> ewokSerialNumbers = attackEvent.getAttack().getSerials();     //get the list of the ewoks required
+            Collections.sort(ewokSerialNumbers);        //sort the ewoks that are required in an ascenting matter to avoid deadlock
             Ewoks ewoks = Ewoks.getInstance();
-            ewoks.acquire(ewokSerialNumbers);
-            System.out.println(getName()+" starts attacking with "+ewokSerialNumbers.toString());
+            ewoks.acquire(ewokSerialNumbers);           //acquire the ewoks that are required for the attack
             try {
-                Thread.sleep(attackEvent.getAttack().getDuration());
+                Thread.sleep(attackEvent.getAttack().getDuration());    //ATTACK!!!
             } catch (InterruptedException ignored) {}
-            complete(attackEvent,true);
-            finishAttack = System.currentTimeMillis();
-            System.out.println(getName()+" finished attack with Ewoks: "+ewokSerialNumbers.toString());
-            ewoks.release(ewokSerialNumbers);
-            Diary.getInstance().addAttack();
+            complete(attackEvent,true);     //complete the event
+            finishAttack = System.currentTimeMillis();  //save the current time of finish attack
+            ewoks.release(ewokSerialNumbers);       //release the ewoks
+            Diary.getInstance().addAttack();        //update +1 in the diary attack number
         });
-        System.out.println(getName()+" finished subscribing to attackEvents");
     }
 }
