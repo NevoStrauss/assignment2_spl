@@ -209,7 +209,7 @@ public class MessageBusImpl implements MessageBus {
 	/**
 	 * If {@code m} is not register, do nothing.
 	 * Remove {@code m} from all the data structures it has been inserted in.
- 	 * @param m the micro-service to unregister.
+	 * @param m the micro-service to unregister.
 	 */
 	@Override
 	public void unregister(MicroService m) {
@@ -233,7 +233,13 @@ public class MessageBusImpl implements MessageBus {
 		return queueMap.containsKey(m);
 	}
 
-
+	/**
+	 * If MicroService {@code m} is not subscribe to Message {@code c} (Event/Broadcast), do nothing.
+	 * Removes MicroService {@code m} from eventMap or BroadcastMap.
+	 * If there are noe more MicroServices which subscribed to {@code c}, remove {@code c}.
+	 * @param c The Message to unsubscribe {@code m} from.
+	 * @param m The MicroService to unsubscribe from {@code c}.
+	 */
 	private void unsubscribeEventOrBroadcast(Class<? extends Message> c, MicroService m){
 		if (eventMap.containsKey(c)) {
 			synchronized (eventMap.get(c)) {
@@ -258,6 +264,13 @@ public class MessageBusImpl implements MessageBus {
 
 	}
 
+	/**
+	 * If MicroService {@code m} is not registered to MessageBus- raise Exception.
+	 * If there are no Messages in {@code m} queue- wait.
+	 * @param m The microService requesting to take a message from its message
+	 *          queue.
+	 * @return the next Message to handle by {@code m}.
+	 */
 	@Override
 	public Message awaitMessage(MicroService m){
 		if (!isRegistered(m))
