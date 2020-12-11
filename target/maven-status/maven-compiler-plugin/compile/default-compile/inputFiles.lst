@@ -2,7 +2,6 @@
 /home/spl211/IdeaProjects/assignment2_spl/src/main/java/bgu/spl/mics/application/Main.java
 /home/spl211/IdeaProjects/assignment2_spl/src/main/java/bgu/spl/mics/MessageBusImpl.java
 /home/spl211/IdeaProjects/assignment2_spl/src/main/java/bgu/spl/mics/Future.java
-/home/spl211/IdeaProjects/assignment2_spl/src/main/java/bgu/spl/mics/application/messages/FinishedSubscribedBroadcast.java
 /home/spl211/IdeaProjects/assignment2_spl/src/main/java/bgu/spl/mics/Message.java
 /home/spl211/IdeaProjects/assignment2_spl/src/main/java/bgu/spl/mics/Event.java
 /home/spl211/IdeaProjects/assignment2_spl/src/main/java/bgu/spl/mics/application/services/LandoMicroservice.java

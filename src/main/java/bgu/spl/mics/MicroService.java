@@ -20,6 +20,8 @@ import java.util.HashMap;
  * Only private fields and methods may be added to this class.
  * <p>
  */
+
+@SuppressWarnings({"unchecked"})
 public abstract class MicroService implements Runnable {
     private String name;
     private MessageBus messageBus;
