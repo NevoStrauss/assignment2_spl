@@ -130,27 +130,17 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	@Override
 	public void sendBroadcast(Broadcast b) {
-		long startTime = System.currentTimeMillis();
-		boolean toContinue = true;
 		if (!broadcastMap.containsKey(b.getClass())){
 			synchronized (broadcastMap) {
-				while (!broadcastMap.containsKey(b.getClass())) {
-					try {
-						if (System.currentTimeMillis()-startTime>500)
-							toContinue = false;
-						broadcastMap.wait(50);
-					} catch (InterruptedException ignored) {
-					}
-				}
+				if (!broadcastMap.containsKey(b.getClass()))
+					return;
 			}
 		}
-		if (toContinue) {
-			synchronized (broadcastMap.get(b.getClass())) {
-				for (MicroService m : broadcastMap.get(b.getClass())) {
-					synchronized (queueMap.get(m)) {
-						queueMap.get(m).offer(b);
-						queueMap.get(m).notifyAll();
-					}
+		synchronized (broadcastMap.get(b.getClass())) {
+			for (MicroService m : broadcastMap.get(b.getClass())) {
+				synchronized (queueMap.get(m)) {
+					queueMap.get(m).offer(b);
+					queueMap.get(m).notifyAll();
 				}
 			}
 		}
@@ -166,17 +156,10 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-		long startTime = System.currentTimeMillis();
 		if (!eventMap.containsKey(e.getClass())){
 			synchronized (eventMap) {
-				while (!eventMap.containsKey(e.getClass())) {
-					try {
-						if (System.currentTimeMillis() - startTime > 500)
-							return null;
-						eventMap.wait(50);
-					} catch (InterruptedException ignored) {
-					}
-				}
+				if (!eventMap.containsKey(e.getClass()))
+					return null;
 			}
 		}
 		Future<T> f = new Future<>();

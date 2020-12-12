@@ -55,7 +55,7 @@ public class Tester {
         //Lower limit for number of attacks to generate
         int numAttacksLowerLimit = 3;
         //Upper limit for number of attacks to generate
-        int numAttacksUpperLimit = 10;
+        int numAttacksUpperLimit = 6;
         int numAttacks = (int) (Math.random() * (numAttacksUpperLimit) + numAttacksLowerLimit);
         generatedAttacks = new Attack[numAttacks];
 
@@ -68,7 +68,7 @@ public class Tester {
                     serialsUsedInAttack.add(r);
             }
             if (serialsUsedInAttack.isEmpty()) serialsUsedInAttack.add(1);
-            generatedAttacks[i] = new Attack(serialsUsedInAttack, (int) (Math.random() * (2000) + 1000));
+            generatedAttacks[i] = new Attack(serialsUsedInAttack, (int) (Math.random() * (200) + 100));
         }
         generatedTest.setAttacks(generatedAttacks);
         generatedTest.setEwoks(numEwoks);
