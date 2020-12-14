@@ -14,30 +14,31 @@ public class EwokTest {
 
     @Test
     public void acquireTest(){
-
             assertTrue(ewok.isAvailable());
             ewok.acquire();
             assertFalse(ewok.isAvailable());
-
     }
 
     @Test
     public void releaseTest(){
-
             ewok.acquire();
             assertFalse(ewok.isAvailable());
             ewok.release();
             assertTrue(ewok.isAvailable());
     }
 
-    @Test
-    public void acquireWhenAlreadyAcquiredTest(){
-        ewok.acquire();
-        assertThrows(InterruptedException.class,()->ewok.acquire());
-    }
 
-    @Test
-    public void releaseWhenNotAcquiredTest(){
-        assertThrows(InterruptedException.class,()->ewok.release());
-    }
+    /**
+     * removed because we changed the logic of the Ewok class
+     */
+//    @Test
+//    public void acquireWhenAlreadyAcquiredTest(){
+//        ewok.acquire();
+//        assertThrows(InterruptedException.class,()->ewok.acquire());
+//    }
+
+//    @Test
+//    public void releaseWhenNotAcquiredTest(){
+//        assertThrows(InterruptedException.class,()->ewok.release());
+//    }
 }

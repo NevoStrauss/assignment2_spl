@@ -35,7 +35,7 @@ public class R2D2Microservice extends MicroService {
     protected void initialize() {
         subscribeEvent(DeactivationEvent.class,(DeactivationEvent deactivationEvent)->{
             try{
-                Thread.sleep(duration);     //first sleeps to deactivate the shield
+                Thread.sleep(duration);     //DEACTIVATE !!!!
             }catch (InterruptedException e){}
             complete(deactivationEvent,true);       //completes the event that triggered this callback
             Diary.getInstance().setR2D2Deactivate(System.currentTimeMillis());      //update the diary after he finished

@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.passiveObjects;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -12,9 +13,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * You must not alter any of the given public methods of this class.
  * <p>
  * You can add ONLY private methods and fields to this class.
- */
 
-/**
+
  * The Ewoks Passive object is implemented as a singleton.
  * The Attacking Microservices are accessing to its instance in runtime,
  * to acquire the ewoks for their attacks.
@@ -32,7 +32,6 @@ public class Ewoks {
     }
 
     /**
-     *
      * @return the only instance of the Ewoks.
      */
     public static Ewoks getInstance(){
@@ -40,7 +39,6 @@ public class Ewoks {
     }
 
     /**
-     *
      * @param ewokArray set the resources from the input (ewoks) for the attacks in a list.
      */
     public void setEwokArray(Ewok[] ewokArray){
@@ -48,17 +46,20 @@ public class Ewoks {
     }
 
     /**
-     *
-     * @param ewoksSerialNumbers is the list of ewoks serial numbers demand for an attack,
+     * @param ewoksSerialNumbers is the list of ewoks serial numbers, demand for an attack,
      * which sent by the Attacking MicroServices before executing an attack.
-     * The methodd loops over the ewok list and tries to acquire the requested ewoks.
+     * The method sorts the serial numbers, and loops over the ewok list and tries to acquire the requested ewoks
+     * in an ascending manner.
      * The method is calling the ewok acquire method, which is synchronized using the
      * Semaphore locker.
+     *
      */
-    public void acquire(List<Integer> ewoksSerialNumbers){
+    public List<Integer> acquire(List<Integer> ewoksSerialNumbers){
+        Collections.sort(ewoksSerialNumbers);
         for (Integer i : ewoksSerialNumbers) {
             ewokArray[i].acquire();
         }
+        return ewoksSerialNumbers;
     }
 
     /**

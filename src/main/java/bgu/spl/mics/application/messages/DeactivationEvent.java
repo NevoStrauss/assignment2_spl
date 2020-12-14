@@ -13,7 +13,6 @@ public class DeactivationEvent implements Event<Boolean> {
     }
 
     /**
-     *
      * @return if this event is already executed by R2D2.
      */
     public boolean isFinished() {
@@ -21,7 +20,6 @@ public class DeactivationEvent implements Event<Boolean> {
     }
 
     /**
-     *
      * @param finished for setting this event to finished.
      */
     public void setFinished(boolean finished) {

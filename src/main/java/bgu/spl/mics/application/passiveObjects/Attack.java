@@ -22,7 +22,6 @@ public class Attack {
     }
 
     /**
-     *
      * @return the duration of the current attack.
      */
     public int getDuration() {
@@ -30,7 +29,6 @@ public class Attack {
     }
 
     /**
-     *
      * @return the list of the ewoks serial numbers.
      */
     public List<Integer> getSerials() {

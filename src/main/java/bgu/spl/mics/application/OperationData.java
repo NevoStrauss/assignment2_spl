@@ -2,6 +2,9 @@ package bgu.spl.mics.application;
 
 import bgu.spl.mics.application.passiveObjects.Attack;
 
+/**
+ * this class stores the input data from the json to start the application.
+ */
 public class OperationData {
     private Attack[] attacks;
     private int R2D2;

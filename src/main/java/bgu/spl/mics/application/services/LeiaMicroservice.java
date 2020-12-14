@@ -16,7 +16,7 @@ import bgu.spl.mics.application.passiveObjects.Diary;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class LeiaMicroservice extends MicroService {
-	private Attack[] attacks;
+	private final Attack[] attacks;
 
     public LeiaMicroservice(Attack[] attacks) {
         super("Leia");
@@ -24,7 +24,7 @@ public class LeiaMicroservice extends MicroService {
     }
 
     /**
-     * Initialize the Leia micro service:
+     * Initialize the Leia MicroService:
      * subscribes to:
      *          Events: none
      *          Broadcasts: Terminate Broadcast
@@ -36,15 +36,14 @@ public class LeiaMicroservice extends MicroService {
     protected void initialize() {
         subscribeBroadcast(TerminateBroadcast.class,(TerminateBroadcast tb)->
         {
-            Diary d = Diary.getInstance();
             terminate();
-            d.setLeiaTerminate(System.currentTimeMillis()); //update diary
+            Diary.getInstance().setLeiaTerminate(System.currentTimeMillis()); //update diary
         });
         try {
             Thread.sleep(100);  //sleep to let everyone finish subscribe
         }catch(InterruptedException ignored){}
 
-        HashMap<Integer, Future<Boolean>> futureMap = new HashMap<>();      //map to save the future objects of the attacks
+        HashMap<Integer, Future<Boolean>> futureMap = new HashMap<>();      //map to reserve the future objects of the attacks
 
         //send all the attacks
         for (int i=0; i<attacks.length;i++) {
@@ -61,7 +60,7 @@ public class LeiaMicroservice extends MicroService {
             futureMap.remove(j);        //after a future object finishes, remove it
         }
 
-        //send the deactivator an event so he can start deactivating
+        //send the deactivator (R2D2) event so he can start deactivating
         Future<Boolean> f = sendEvent(new DeactivationEvent());
         f.get();                    //waiting for the deactivator finish deactivating shield
 

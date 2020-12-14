@@ -36,7 +36,7 @@ public class Future<T> {
 			try {
 				wait();	//wait until it is done
 			}
-			catch (InterruptedException e){}
+			catch (InterruptedException ignored){}
 		}
 		return result;
 	}
@@ -78,7 +78,7 @@ public class Future<T> {
 		while (!isDone && System.currentTimeMillis()<endTime) {
 			try {
 				wait(unit.toMillis(timeout));
-			} catch (InterruptedException e) {}
+			} catch (InterruptedException ignored) {}
 		}
 		return result;
 	}

@@ -23,9 +23,9 @@ import java.util.HashMap;
 
 @SuppressWarnings({"unchecked"})
 public abstract class MicroService implements Runnable {
-    private String name;
-    private MessageBus messageBus;
-    private HashMap<Class<? extends Message>,Callback> callbackHashMap;
+    private final String name;
+    private final MessageBus messageBus;
+    private final HashMap<Class<? extends Message>,Callback> callbackHashMap;
     private boolean isDone;
 
     /**
@@ -61,7 +61,7 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback) {
-        if (!callbackHashMap.containsKey(type)) {   //checks if there is already a callback for the @type
+        if (!callbackHashMap.containsKey(type)) {   //checks if there is already a callback for the {@code type}
             messageBus.subscribeEvent(type, this);
             callbackHashMap.put(type, callback);
         }

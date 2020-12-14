@@ -8,15 +8,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  * We are going to compare your recordings with the expected recordings, and make sure that your output makes sense.
  * <p>
  * Do not add to this class nothing but a single constructor, getters and setters.
- */
 
-/**
  * The Diary Passive object is implemented as a singleton.
  * all of the services are accessing to its instance in runtime to set their parameters to record.
  * At the end of the process, the Diary fields converted to json file,
  * and displays the chronological summary of the 'battle set'.
  */
 public class Diary {
+
     private static class single_instance{
         private static final Diary single_instance = new Diary();
     }
@@ -155,7 +154,7 @@ public class Diary {
     }
 
     /**
-     * @param r2D2Deactivate accessed only by R2S2 when it gets the 'DeactivationEvent'.
+     * @param r2D2Deactivate accessed only by R2D2 when it gets the 'DeactivationEvent'.
      */
     public void setR2D2Deactivate(long r2D2Deactivate) {
         R2D2Deactivate = r2D2Deactivate;
@@ -172,14 +171,5 @@ public class Diary {
      * add one attack to the attack counter. accessed only by the attacking MicroServices,
      * (in our case- HanSolo and C3PO)
      */
-    public void addAttack(){
-        totalAttacks.addAndGet(1);
-    }
-
-    /**
-     * This methods is implemented only for executing multiple tests in a row.
-     */
-    public void resetTotalAttacks(){
-        totalAttacks=new AtomicInteger(0);
-    }
+    public void addAttack(){totalAttacks.incrementAndGet();}
 }

@@ -132,6 +132,6 @@ class MessageBusImplTest {
     @Test
     void awaitMessageWhenMsNotRegistered(){
         MS ms = new MS("test");
-        assertThrows(InterruptedException.class,()->messageBus.awaitMessage(ms));
+        assertThrows(RuntimeException.class,()->messageBus.awaitMessage(ms));
     }
 }

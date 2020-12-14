@@ -7,12 +7,10 @@ import java.util.concurrent.Semaphore;
  * You must not alter any of the given public methods of this class.
  * <p>
  * You may add fields and methods to this class as you see fit (including public methods).
- */
 
-/**
  * This class is implemented using a Semaphore,
  * to restrict the obtaining of the ewoks by the Threads.
- * each thread must acquire a permit from the semaphore,
+ * each thread must acquire a permit from the Semaphore,
  * guaranteeing that the ewok is available for use.
  */
 

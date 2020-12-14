@@ -12,7 +12,7 @@ import bgu.spl.mics.application.passiveObjects.Diary;
  */
 public class LandoMicroservice  extends MicroService {
 
-    private long duration;
+    private final long duration;
 
     public LandoMicroservice(long duration) {
         super("Lando");
@@ -29,8 +29,8 @@ public class LandoMicroservice  extends MicroService {
        subscribeEvent(BombDestroyerEvent.class,(BombDestroyerEvent bombDestroyerEvent)->
        {
            try {
-               Thread.sleep(duration);      //sleep to bomb
-           }catch (InterruptedException e){}
+               Thread.sleep(duration);      //DESTROY!!!!!
+           }catch (InterruptedException ignored){}
            complete(bombDestroyerEvent,true);   //complete the event
            sendBroadcast(new TerminateBroadcast());     //inform everyone that they should terminate
        });
